@@ -55,14 +55,6 @@ uart:
   tx_pin: GPIO15
   baud_rate: 9600
 
-number:
-  - platform: "tuya"
-    id: eco_select
-    number_datapoint: 101
-    min_value: 0
-    max_value: 17
-    step: 1
-
 select:
   - platform: "tuya"
     tuya_id: "house"
