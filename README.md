@@ -53,6 +53,11 @@ EDIT: for future reference, I only grounded GPIO0, grounding RST wouldn't let me
 
 ![image](https://user-images.githubusercontent.com/52110065/201826705-5dca2316-681d-4a11-b2fe-dcdd6da0d05e.png)
 
+The spiffy new entity with options to change Power and ECO mode.
+
+![Screenshot from 2022-11-15 14-29-39](https://user-images.githubusercontent.com/52110065/202032861-c4ea4b0f-2f69-43af-9834-0432102438a4.png)
+
+
 
 
 
