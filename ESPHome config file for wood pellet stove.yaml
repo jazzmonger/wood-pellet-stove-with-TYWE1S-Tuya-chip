@@ -1,28 +1,31 @@
-#Wood Pellet stove template
-substitutions:
-  device_name: test-wood-pellet-stove
-  device_description: Test Wood Pellet Stove in Shop
-  friendly_name: Test Wood Pellet Stove
 #----------------------------------------------------------
+substitutions:
+  device_name: house-wood-pellet-stove
+  device_description: House Wood Pellet Stove running ESPHome
+  friendly_name: House Wood Pellet Stove
+#----------------------------------------------------------
+external_components:
+  - source: github://pr#4032
+    components: tuya
+    refresh: 0s
+ 
 esphome:
   name: ${device_name}
   comment: ${device_description}
   platform: ESP8266
   board: esp01_1m
-external_components:
-  - source: github://pr#4032
-    components: tuya
-    refresh: 0s
+#esp8266:
+#  board: esp01_1m
 api:
 ota:
 wifi:
-  ssid: "redacted"
-  password: "redacted"
+  ssid: "REDACTED"
+  password: "REDACTED"
   power_save_mode: none
   # ...
   manual_ip:
     # Set this to the IP of the ESP
-    static_ip: 192.168.1.xxx
+    static_ip: 192.168.1.80
     # Set this to the IP address of the router. Often ends with .1
     gateway: 192.168.1.1
     # The subnet of the network. 255.255.255.0 works for most home networks.
@@ -31,8 +34,8 @@ wifi:
 # Enable Home Assistant API
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Test-Wood-Pellet-Stove"
-    password: "redacted"
+    ssid: "House-Wood-Pellet-Stove"
+    password: "REDACTED"
 
 captive_portal:
     
@@ -52,9 +55,34 @@ uart:
   tx_pin: GPIO15
   baud_rate: 9600
 
-# Register the Tuya MCU connection
-tuya:
-# 1 - Power on (Heat)
+number:
+  - platform: "tuya"
+    id: eco_select
+    number_datapoint: 101
+    min_value: 0
+    max_value: 17
+    step: 1
+
+select:
+  - platform: "tuya"
+    tuya_id: "house"
+    name: "ESPH House Power Select"
+    enum_datapoint: 4
+    options:
+      0: P1
+      1: P2
+      2: P3
+      3: P4
+  - platform: "tuya"
+    tuya_id: "house"
+    name: "ESPH House ECO Select"
+    enum_datapoint: 101
+    options:
+      0: ECO1
+      1: ECO2
+
+##DATA POINT VALUES
+#1 - Power on (Heat)
 #4 - Mode P1/P2/P3P4
 #101 - ECO1/ECO2
 #104 - Error Code
@@ -62,27 +90,46 @@ tuya:
 #107 - Current Temp
 #108 - Pipe Temp
 #109 - Protect Temp
+#-----------------
+#Datapoint 1: switch (value: OFF)
+#Datapoint 105: enum (value: 0)
+#Datapoint 4: enum (value: 0)
+#Datapoint 101: enum (value: 0)
+#Datapoint 106: int value (value: 68)
+#Datapoint 107: int value (value: 64)
+#Datapoint 108: int value (value: 68)
+#Datapoint 109: int value (value: 72)
+#Datapoint 104: bitmask (value: 0)
+#GPIO Configuration: status: pin 5, reset: pin 0
+#Product: '{"p":"8Dj5zVjGqPSXaUgf","v":"1.0.0","m":0}'
 
-#text_sensor:
-#  - platform: "tuya"
-switch:
-  - platform: "tuya"
-    name: "Shop Test Stove-ECO"
-    switch_datapoint: 101
-    
+# Register the Tuya MCU connection
+tuya:
+  id: "house"
+  
+#These arent needed but greatly help in debugging
 sensor:
   - platform: "tuya"
-    name: "Shop Test Stove-Power On"
+    name: "ESPH House Stove-Power On"
     sensor_datapoint: 1
   - platform: "tuya"
-    name: "Shop Test Stove-Error Code"
+    name: "ESPH House Stove-Error Code"
     sensor_datapoint: 104
   - platform: "tuya"   
-    name: "Shop Test Stove-ECO Mode"
+    name: "ESPH House Stove-ECO Mode"
     sensor_datapoint: 101
   - platform: "tuya"
-    name: "Shop Test Stove-Power Mode"
+    name: "ESPH House Stove-Power Mode"
     sensor_datapoint: 4
+  - platform: "tuya"
+    name: "ESPH House Stove-DP#105"
+    sensor_datapoint: 105
+  - platform: "tuya"
+    name: "ESPH House Stove-Set Temp"
+    sensor_datapoint: 106
+  - platform: "tuya"
+    name: "ESPH House Stove-Current Temp"
+    sensor_datapoint: 107
 #
   - platform: uptime
     id: sensor_uptime
@@ -105,11 +152,8 @@ sensor:
 climate:
   - platform: tuya
     reports_fahrenheit: true
-    name: " Shop Test Stove ESPHome"
+    name: "House Wood Pellet Stove"
     switch_datapoint: 1
     target_temperature_datapoint: 106
     current_temperature_datapoint: 107
-    eco_datapoint: 101
-    eco_temperature: 62 °F
-#  
     
