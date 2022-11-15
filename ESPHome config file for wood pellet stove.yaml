@@ -1,0 +1,115 @@
+#Wood Pellet stove template
+substitutions:
+  device_name: test-wood-pellet-stove
+  device_description: Test Wood Pellet Stove in Shop
+  friendly_name: Test Wood Pellet Stove
+#----------------------------------------------------------
+esphome:
+  name: ${device_name}
+  comment: ${device_description}
+  platform: ESP8266
+  board: esp01_1m
+external_components:
+  - source: github://pr#4032
+    components: tuya
+    refresh: 0s
+api:
+ota:
+wifi:
+  ssid: "redacted"
+  password: "redacted"
+  power_save_mode: none
+  # ...
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: 192.168.1.xxx
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: 192.168.1.1
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+# Enable Home Assistant API
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Test-Wood-Pellet-Stove"
+    password: "redacted"
+
+captive_portal:
+    
+time:
+  - platform: homeassistant
+    id: time_homeassistant
+    on_time_sync:
+      - component.update: sensor_uptime_timestamp
+      
+# Enable logging
+logger:
+  level: DEBUG
+  baud_rate: 0
+
+uart:
+  rx_pin: GPIO13
+  tx_pin: GPIO15
+  baud_rate: 9600
+
+# Register the Tuya MCU connection
+tuya:
+# 1 - Power on (Heat)
+#4 - Mode P1/P2/P3P4
+#101 - ECO1/ECO2
+#104 - Error Code
+#106 Set Temp
+#107 - Current Temp
+#108 - Pipe Temp
+#109 - Protect Temp
+
+#text_sensor:
+#  - platform: "tuya"
+switch:
+  - platform: "tuya"
+    name: "Shop Test Stove-ECO"
+    switch_datapoint: 101
+    
+sensor:
+  - platform: "tuya"
+    name: "Shop Test Stove-Power On"
+    sensor_datapoint: 1
+  - platform: "tuya"
+    name: "Shop Test Stove-Error Code"
+    sensor_datapoint: 104
+  - platform: "tuya"   
+    name: "Shop Test Stove-ECO Mode"
+    sensor_datapoint: 101
+  - platform: "tuya"
+    name: "Shop Test Stove-Power Mode"
+    sensor_datapoint: 4
+#
+  - platform: uptime
+    id: sensor_uptime
+#sensor:
+  - platform: wifi_signal
+    name: ${friendly_name} Signal
+    update_interval: 60s    
+  - platform: template
+    id: sensor_uptime_timestamp
+    name: "${friendly_name} Uptime"
+    device_class: "timestamp"
+    accuracy_decimals: 0
+    update_interval: never
+    lambda: |-
+      static float timestamp = (
+        id(time_homeassistant).utcnow().timestamp - id(sensor_uptime).state
+      );
+      return timestamp;
+#
+climate:
+  - platform: tuya
+    reports_fahrenheit: true
+    name: " Shop Test Stove ESPHome"
+    switch_datapoint: 1
+    target_temperature_datapoint: 106
+    current_temperature_datapoint: 107
+    eco_datapoint: 101
+    eco_temperature: 62 °F
+#  
+    
