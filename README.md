@@ -1,5 +1,5 @@
 **Product Model:** Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
-I have a test bench set up with a spare control board.
+I have a test bench set up with a spare control board. i have 2 models of this stove which both fail, but for different reasons.
 
 It also appears from the Wifi module (N12210) that this exact same controller is used in Nemaxx Pellet Stove Pellet Heater P6 P9 P12.  https://www.ebay.com/itm/193755684864
 
@@ -7,20 +7,26 @@ There are a few displays that look slightly different but I believe all have the
 ![image](https://user-images.githubusercontent.com/52110065/201829440-4ba185fc-b787-47f6-98dc-5aa7e67d9064.png)
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
 
-link to product manual https://www.cleveland-ironworks.com/mwdownloads/download/link/id/2763
-
-Their app is a Tuya based app tht looks like this:
-
-![image](https://user-images.githubusercontent.com/52110065/201826389-4d6983e2-d4e9-4c8c-8e9a-fdad121f7824.png)
-
-It works ok, but the stove malfunctions fairly frequently.  This is an attempt to mitigate all that.
+They work ok most of the time, but the stove malfunctions fairly frequently.  This is an attempt to mitigate all that.
+Common mafunctions include:
+- randomly turning off w/ the msg "Goodbye!" on the dusplay.
+- pellets failing to light in the hopper
+- not coming back on after power failure
+- various cryptic E messages from time to time. E1,E2,ESC1, ESO1,ESC2,ESO2,etc  
 
 **Problem**
 Pellet stoves made by Cleveland Ironworks all use the TuyaMCU chip TYWE1S to communicate with the stove's MCU inside the display unit.  Their shoddy programmer defined multiple datapoints for the same attribute in at least 2 cases, the most important being temperature.    The other problem is it sends its temp values as degrees F and ALL esphome climate entities originate in C.  If you set your HA instance to imperial, it will automagically convert C to F.  In this case it convering what it thinks is C ( but is really F) into F again.  temp readings are whacked and there was nothing you can do until now.
 
+link to product manual https://www.cleveland-ironworks.com/mwdownloads/download/link/id/2763
+
+Their app is a vendor written Tuya based app that looks like this:
+
+![image](https://user-images.githubusercontent.com/52110065/201826389-4d6983e2-d4e9-4c8c-8e9a-fdad121f7824.png)
+
+
 ![image](https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png)
 
-So, the main problems are setting your target temp doesn't work bc it fights with my stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
+So, the main problems with trying tomcontrol it manually are setting your target temp doesn't work bc it fights with my stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
 
 **Solution**
 - Flash ESPHome to the chip.
