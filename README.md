@@ -9,7 +9,7 @@ There are a few displays that look slightly different but I believe all have the
 
 They work ok most of the time, but the stove malfunctions fairly frequently.  This is an attempt to mitigate all that.
 Common mafunctions include:
-- randomly turning off w/ the msg "Goodbye!" on the dusplay.
+- randomly turning off w/ the msg "Goodbye!" on the display.
 - pellets failing to light in the hopper
 - not coming back on after power failure
 - various cryptic E messages from time to time. E1,E2,ESC1, ESO1,ESC2,ESO2,etc  
@@ -26,7 +26,7 @@ Their app is a vendor written Tuya based app that looks like this:
 
 ![image](https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png)
 
-So, the main problems with trying tomcontrol it manually are setting your target temp doesn't work bc it fights with my stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
+So, the main problems with trying to control it manually are setting your target temp doesn't work bc it fights with my stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
 
 **Solution**
 - Flash ESPHome to the chip.
