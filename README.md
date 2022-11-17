@@ -31,7 +31,9 @@ So, the main problems with trying to control it manually are setting your target
 **Solution**
 - Flash ESPHome to the chip.
 - use the new mod I got one of the ESPhome devs to make for me and you're golden.  its defined in the esphome config file.
-- if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I'm working on should help mitigate that.
+- if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I'm working on should help mitigate this
+
+See the PR's for soecific solutions to some of the errors and problems I've solved over the past year.
 
 Have fun.
 
