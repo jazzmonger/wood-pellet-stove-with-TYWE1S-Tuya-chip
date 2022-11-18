@@ -3,6 +3,8 @@ I have a test bench set up with a spare control board. i have 2 models of this s
 
 It also appears from the Wifi module (N12210) that this exact same controller is used in Nemaxx Pellet Stove Pellet Heater P6 P9 P12.  https://www.ebay.com/itm/193755684864
 
+Masterforge has the exact same models of this stove, all will use the same controller.
+
 There are a few displays that look slightly different but I believe all have the same internals.
 ![image](https://user-images.githubusercontent.com/52110065/201829440-4ba185fc-b787-47f6-98dc-5aa7e67d9064.png)
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
