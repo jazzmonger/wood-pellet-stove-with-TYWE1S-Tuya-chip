@@ -44,11 +44,11 @@ Their app is a vendor written Tuya based app that looks like this:
 So, the main problems with trying to control it manually are setting your target temp doesn't work bc it fights with my stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
 
 **Solution**
-- Flash ESPHome to the chip.
+- Flash ESPHome to the chip using TuyaMCU
 - use the new mod I got one of the ESPhome devs to make for me and you're golden.  its defined in the esphome config file.
 - if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I'm working on should help mitigate this
 
-See the PR's for soecific solutions to some of the errors and problems I've solved over the past year.
+See the PR's for specific solutions to some of the errors and problems I've solved over the past year.
 
 Have fun.
 
