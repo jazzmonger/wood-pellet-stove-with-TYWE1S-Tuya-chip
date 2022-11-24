@@ -1,15 +1,28 @@
-**Product Model:** Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
+This project dives deep into the TuyaMCU parts of ESPHome.  While the implementation is robust, getting information on what it does, how it does it and why has been quite a journey.  I hope this helps someone else.
+
+The Tuya TYWE1S chips and those like it are basically just repackaged ESP8266 modules.  All the functions of the 8266 are all there.  TuyaMCU provides an abstraction layer between the display/control until and ESPHome. It allows control messages to be both Sent and Received from the device the module is controlling.
+
+I'm an electronic engineer/designer by education and training, not a programmer.  When chips are soldered in place on a commercial circuit board and each pin has a live trace going to and from it, then we, as trained engineers, MUST assume that those pins are being used for some purpose, hence, likely not available for use.  but...
+
+That said, I LOVE hacking this stuff and just because a trace is there doesnt mean the pin cant be used.  Best practice is to ground unused inputs and outputs with or without current limiting resistors.  However, in the case of multilayer PCBs, it is next to impossible for the average person to know what or how to trace those pins.  But, often they can be used.  More on this later.
+
+We start with replacing the buggy, error prone Tuya control software in the TYE1S control chip in my Wood Pellet Stove with ESPHome.
+
+**Product Models:** 
+Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
 I have a test bench set up with a spare control board. i have 2 models of this stove which both fail, but for different reasons.
 
 It also appears from the Wifi module (N12210) that this exact same controller is used in Nemaxx Pellet Stove Pellet Heater P6 P9 P12.  https://www.ebay.com/itm/193755684864
 
 Masterforge has the exact same models of this stove, all will use the same controller.
 
+Ther are several others sold by Lowes, and other retailers that use the same display control board and TYWE1S chip.
+
 There are a few displays that look slightly different but I believe all have the same internals.
 ![image](https://user-images.githubusercontent.com/52110065/201829440-4ba185fc-b787-47f6-98dc-5aa7e67d9064.png)
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
 
-They work ok most of the time, but the stove malfunctions fairly frequently.  This is an attempt to mitigate all that.
+They work ok most of the time, but the stove malfunctions fairly frequently.  
 Common mafunctions include:
 - randomly turning off w/ the msg "Goodbye!" on the display.
 - pellets failing to light in the hopper
