@@ -1,5 +1,7 @@
 This project dives deep into the TuyaMCU parts of ESPHome.  While the implementation is robust, getting information on what it does, how it does it and why has been quite a journey.  I hope this helps someone else.
 
+TuyaMCU Docs. https://esphome.io/components/tuya.html
+
 The Tuya TYWE1S chips and those like it are basically just repackaged ESP8266 modules.  All the functions of the 8266 are all there.  TuyaMCU provides an abstraction layer between the display/control until and ESPHome. It allows control messages to be both Sent and Received from the device the module is controlling.
 
 I'm an electronic engineer/designer by education and training, not a programmer.  When chips are soldered in place on a commercial circuit board and each pin has a live trace going to and from it, then we, as trained engineers, MUST assume that those pins are being used for some purpose, hence, likely not available for use.  but...
