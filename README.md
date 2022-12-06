@@ -33,9 +33,10 @@ Common mafunctions include:
 - pellets failing to light in the hopper
 - not coming back on after power failure
 - various cryptic E messages from time to time. E1,E2,ESC1, ESO1,ESC2,ESO2,etc  
-- the stove will overheat when set to ECO2 and P1, throwing ESC1 errors. mitigate this with a fan behind the stove, triggered by exhaust temp.  set combustion fan to -10 for P1 in stove settings
+- the stove will overheat when set to ECO2 and P1, throwing ESC1 errors. mitigate this with a fan behind the stove, triggered by exhaust temp.  set combustion fan to -10 for P1 in stove settings. 
+The fan also fixes E6 error code indicating the temp sensor below the pellet hopper is reading too high
 
-**Problem**
+**Problem Definition**
 Pellet stoves made by Cleveland Ironworks all use the TuyaMCU chip TYWE1S to communicate with the stove's MCU inside the display unit.  Their shoddy programmer defined multiple datapoints for the same attribute in at least 2 cases, the most important being temperature.  This results in the Tuya integration reporting a random (usually negative) false value for current temp. The other problem is it sends its temp values as degrees F and ALL esphome climate entities originate in C.  If you set your HA instance to imperial, it will automagically convert C to F.  In this case it convering what it thinks is C ( but is really F) into F again.  temp readings are whacked and there was nothing you can do until now.
 
 link to product manual https://www.cleveland-ironworks.com/mwdownloads/download/link/id/2763
