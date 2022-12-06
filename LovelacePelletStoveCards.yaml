@@ -1,0 +1,153 @@
+resources:
+  - url: /local/mini-graph-card-bundle.js?v=0.9.4
+    type: module
+background: var(--background-image)
+title: Pellet Stove
+views:
+  - theme: Backend-selected
+    title: Climate
+    path: climate
+    icon: mdi:home-thermometer-outline
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: climate.house_wood_pellet_stove
+              - type: custom:slider-entity-row
+                entity: climate.house_wood_pellet_stove
+                full_row: true
+                toggle: true
+              - entity: select.esph_house_power_select
+              - entity: select.esph_house_eco_select
+                name: ECO1=Heat then OFF, ECO2=P1 then P4 Maintain
+                show_header_toggle: false
+                state_color: true
+          - show_name: true
+            show_icon: false
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.esph_house_stove_error_code
+                name: Error code
+              - entity: sensor.esph_house_stove_current_temp
+                name: Curr temp
+              - entity: sensor.stove_current_temp_sensor_smoothed
+                name: Smoothed
+              - entity: sensor.esph_house_stove_set_temp
+                name: Set temp
+              - entity: sensor.esph_house_bs_error_yesno
+                name: BS Error
+            state_color: false
+          - type: entities
+            entities:
+              - entity: automation.fix_wood_stove_error
+              - entity: switch.house_stove_fan_socket_1
+                name: Cooling Fan @225F
+                secondary_info: last-changed
+              - entity: automation.house_pellet_stove_hvac_am_5_30_to_70
+                name: HVAC Schedule
+              - entity: sensor.esph_house_error_code_decoded
+                name: Error Msg
+              - entity: binary_sensor.bs_stove_error
+                secondary_info: last-changed
+                state_color: true
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.house_wood_pellet_stove_signal
+      - type: vertical-stack
+        cards:
+          - type: thermostat
+            entity: climate.shop_pellet_stove
+          - type: entities
+            entities:
+              - entity: climate.shop_air_10100940
+      - type: custom:plotly-graph
+        entities:
+          - entity: sensor.esph_house_stove_current_temp
+            show_value:
+              right_margin: 40
+          - entity: sensor.esph_house_stove_set_temp
+            show_value:
+              right_margin: 40
+          - entity: sensor.stove_current_temp_sensor_smoothed
+            show_value:
+              right_margin: 40
+            color: yellow
+          - entity: sensor.esph_house_bs_error_10
+            show_value:
+              right_margin: 40
+        refresh_interval: 5
+        hours_to_show: 8
+        layout:
+          height: 600
+          xaxis:
+            rangeselector:
+              'y': 1.2
+              buttons:
+                - count: 1
+                  step: minute
+                - count: 10
+                  step: minute
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 6
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 24
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+        view_layout:
+          position: main
+      - type: custom:plotly-graph
+        entities:
+          - entity: sensor.esph_house_stove_pipe_temp
+            show_value:
+              right_margin: 40
+          - entity: sensor.esph_house_stove_protect_temp
+            show_value:
+              right_margin: 40
+            color: yellow
+          - entity: sensor.esph_house_stove_current_temp
+            show_value:
+              right_margin: 40
+            color: bright white
+        refresh_interval: 10
+        hours_to_show: 1
+        layout:
+          height: 600
+          xaxis:
+            rangeselector:
+              'y': 1.2
+              buttons:
+                - count: 1
+                  step: minute
+                - count: 10
+                  step: minute
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 6
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 24
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+        view_layout:
+          position: main
