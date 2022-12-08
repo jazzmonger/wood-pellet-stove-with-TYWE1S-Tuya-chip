@@ -1,4 +1,4 @@
-Pellet Stove conversion to ESPHome.
+Wood Pellet Stove with Tuya TYWE1S chip flashed with ESPHome.
 
 This project dives deep into the TuyaMCU parts of ESPHome for various pellet stoves.  While the TuyaMCU implementation is robust, getting information on what it does and how it does it and why has been challenging to say the least.  I hope this helps someone else.
 See the issues section for mods, and explanations of various parts of these stoves.
