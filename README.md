@@ -54,7 +54,7 @@ simply flashing esphome to the chip gives incorrect temp readings due to the sto
 also, the main problem with trying to control the stove by brute force manually is setting your target temp doesn't work bc it fights with the stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
 
 **Solution**
-- Flash ESPHome to the chip using TuyaMCU
+- Flash ESPHome to the TWYE1S chip using TuyaMCU. This is the module that relays info to and from the stoves control board and also provides a WiFi interface to the Tuya iOT cloud platform  
 - use the new mod I got one of the ESPhome devs to make for me and you're golden.  its defined in the esphome config file.
 - if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I've provided should help mitigate this
 
