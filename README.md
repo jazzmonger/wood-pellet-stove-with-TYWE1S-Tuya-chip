@@ -11,7 +11,7 @@ The Tuya TYWE1S chips and those like it are basically just repackaged ESP8266 mo
 
 I'm an electronic engineer/designer by education and training, not a programmer.  When chips are soldered in place on a commercial circuit board and each pin has a live trace going to and from it, then we, as trained engineers, MUST assume that those pins are being used for some purpose, hence, likely not available for use.  but...
 
-That said, I LOVE hacking this stuff and just because a trace is there doesnt mean the pin cant be used.  Best practice is to ground unused inputs and outputs on all integrated circuit chips, with or without using current limiting resistors.  However, in the case of multilayer PCBs, it is next to impossible for the average person to know what or how to trace those pins to see if they are being used.  But, often they can be repurposed.  More on this later.
+That said, I LOVE hacking this stuff and just because a trace is there doesnt mean the pin cant be used.  Best practice is to ground unused inputs and outputs on all integrated circuit chips, with or without using current limiting resistors.  However, in the case of multilayer PCBs, it is next to impossible for the average person to know what or how to trace those pins to see if they are being used.  But, often they can be repurposed because in applications such as this, the Tuya chip is just there to provide a WiFi function, and the GPIOs are just sitting there idle.  More on this later.
 
 We start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
 
