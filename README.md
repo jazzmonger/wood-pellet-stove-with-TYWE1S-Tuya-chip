@@ -83,7 +83,7 @@ Remove it from the display module.  It unplugs easily.
 
 this link shows you how to do it: https://tasmota.github.io/docs/TuyaMCU-Devices/#costco-charging-essentials
 
-EDIT: for future reference, I only grounded GPIO0 to flash the chip.
+EDIT: for future reference, I used 3.3v, U0TX and U0RX to my flashing interface and only grounded GPIO0 to flash the chip.
 WARNING - be careful when you solder wires to the board/chip to flash the chip.  I used breadbord wires w/pins and my VCC conneection broke and it took most of the circuit board trace off both the board AND the chip.  I salvaged it with a Frankenstein jumper, but you've been warned!
 
 
