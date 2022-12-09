@@ -83,8 +83,10 @@ Remove it from the display module.  It unplugs easily.
 
 this link shows you how to do it: https://tasmota.github.io/docs/TuyaMCU-Devices/#costco-charging-essentials
 
-EDIT: for future reference, I only grounded GPIO0, grounding RST wouldn't let me flash the chip.
+EDIT: for future reference, I only grounded GPIO0 to flash the chip.
 WARNING - be careful when you solder wires to the board/chip to flash the chip.  I used breadbord wires w/pins and my VCC conneection broke and it took most of the circuit board trace off both the board AND the chip.  I salvaged it with a Frankenstein jumper, but you've been warned!
+
+
 
 ![image](https://user-images.githubusercontent.com/52110065/201826705-5dca2316-681d-4a11-b2fe-dcdd6da0d05e.png)
 
@@ -96,8 +98,4 @@ type: custom:plotly-graph
 
 ![FD170D9C-2115-40DC-B2CB-CFCBC79D0ED4](https://user-images.githubusercontent.com/52110065/205919641-3d850cbc-5b52-4826-8e8e-4072a784e0c3.jpeg)
 
-
-
-
-
-
+![2214C401-0F23-4C0E-A11A-6B35EF960212](https://user-images.githubusercontent.com/52110065/206728504-6cf685a2-e121-4c3a-acbe-583272950f5c.jpeg)
