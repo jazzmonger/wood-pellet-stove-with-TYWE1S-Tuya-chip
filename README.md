@@ -13,7 +13,7 @@ I'm an electronic engineer/designer by education and training, not a programmer.
 
 That said, I LOVE hacking this stuff and just because a trace is there doesnt mean the pin cant be used.  Best practice is to ground unused inputs and outputs on all integrated circuit chips, with or without using current limiting resistors.  However, in the case of multilayer PCBs, it is next to impossible for the average person to know what or how to trace those pins to see if they are being used.  But, often they can be repurposed.  More on this later.
 
-We start with replacing the buggy, error prone Tuya control software by flashing ESPHomme onto the display's TYE1S Tuya communications & controller chip.
+We start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
 
 **Product Models:** 
 Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
