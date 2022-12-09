@@ -91,6 +91,8 @@ WARNING - be careful when you solder wires to the board/chip to flash the chip. 
 
 ![image](https://user-images.githubusercontent.com/52110065/201826705-5dca2316-681d-4a11-b2fe-dcdd6da0d05e.png)
 
+![2214C401-0F23-4C0E-A11A-6B35EF960212](https://user-images.githubusercontent.com/52110065/206728504-6cf685a2-e121-4c3a-acbe-583272950f5c.jpeg)
+
 The spiffy new entity with options to change Power and ECO mode. See the file uploads for all the cide to generate these.
 
 special cards used frim HACS
@@ -99,4 +101,4 @@ type: custom:plotly-graph
 
 ![FD170D9C-2115-40DC-B2CB-CFCBC79D0ED4](https://user-images.githubusercontent.com/52110065/205919641-3d850cbc-5b52-4826-8e8e-4072a784e0c3.jpeg)
 
-![2214C401-0F23-4C0E-A11A-6B35EF960212](https://user-images.githubusercontent.com/52110065/206728504-6cf685a2-e121-4c3a-acbe-583272950f5c.jpeg)
+
