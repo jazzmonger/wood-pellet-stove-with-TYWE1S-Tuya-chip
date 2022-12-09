@@ -17,6 +17,7 @@ We start with replacing the buggy, error prone Tuya control software by flashing
 
 **Product Models:** 
 Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
+https://www.cleveland-ironworks.com/products/pellet-stoves.html
 I have a test bench set up with a spare control board. i have 2 models of this stove which both fail, but for different reasons.
 
 It also appears from the Wifi module (N12210) that this exact same controller is used in Nemaxx Pellet Stove Pellet Heater P6 P9 P12.  https://www.ebay.com/itm/193755684864
