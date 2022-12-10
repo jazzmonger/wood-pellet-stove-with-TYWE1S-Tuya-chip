@@ -54,9 +54,7 @@ Their app is a vendor written Tuya based app that looks like this:
 ![image](https://user-images.githubusercontent.com/52110065/201826389-4d6983e2-d4e9-4c8c-8e9a-fdad121f7824.png)
 
 
-#![image](https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png)
-
-<img src="[https://github.com/favicon.ico](https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png)" width="200">
+<img src="[https://github.com/favicon.ico](https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png)" width="100">
 
 simply flashing esphome to the chip gives incorrect temp readings due to the stove using F instead of C for values. a fix for this is coming.
 
