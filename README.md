@@ -53,9 +53,9 @@ Their app is a vendor written Tuya based app that looks like this:
 
 ![image](https://user-images.githubusercontent.com/52110065/201826389-4d6983e2-d4e9-4c8c-8e9a-fdad121f7824.png)
 
-<img src="https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png" width="200">
-
 simply flashing esphome to the chip gives incorrect temp readings due to the stove using F instead of C for values. a fix for this is coming.
+
+<img src="https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png" width="200">
 
 also, the main problem with trying to control the stove by brute force manually is setting your target temp doesn't work bc it fights with the stove's internal "set temp" that is set thru the front panel. when the room temp sensor reaches the user set value it shuts off to stove - a self contained system. there is no manual way to get around it and convert it to a manual operation. too many sensors, blowers, igniters, relays and safety issues to etc to deal with.
 
