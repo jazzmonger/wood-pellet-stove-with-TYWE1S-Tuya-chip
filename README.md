@@ -53,7 +53,7 @@ Their app is a vendor written Tuya based app that looks like this:
 
 ![image](https://user-images.githubusercontent.com/52110065/201826389-4d6983e2-d4e9-4c8c-8e9a-fdad121f7824.png)
 
-simply flashing esphome to the chip gives incorrect temp readings due to the stove using F instead of C for values. a fix for this is coming.
+simply flashing esphome to the chip gives incorrect temp readings due to the stove using F instead of C for values. a fix for this is coming.  The stove below might work great in purgatory, but not in the real world...
 
 <img src="https://user-images.githubusercontent.com/52110065/201826977-369853d6-650e-4048-9e9a-6701e3d1621c.png" width="200">
 
