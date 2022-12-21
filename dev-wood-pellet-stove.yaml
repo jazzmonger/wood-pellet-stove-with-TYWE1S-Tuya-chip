@@ -1,3 +1,5 @@
+# Adds new P5 power level that features adjustable Auger feed rate and delay.
+#REQUIRES simple modifications to MCU board and display board to interrupt existing Auger motor control and adding GPIO control from this ESP. 
 #----------------------------------------------------------
 substitutions:
   device_name: "dev-wood-pellet-stove"
