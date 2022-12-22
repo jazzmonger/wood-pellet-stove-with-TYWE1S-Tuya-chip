@@ -31,7 +31,9 @@ Masterforge has the exact same models of this stove, all will use the same contr
 
 Ther are several others sold by Lowes, and other retailers that use the same display control board and TYWE1S chip.
 
-There are a few displays that look slightly different but I believe all have the same internals.
+There are a few displays that look slightly different but I believe all have the same basic internals. The displays have exactly the same function, just dufferent color faceplates.
+All will have a TYWE1S chip for wifi that can be reprogrammed.
+
 ![image](https://user-images.githubusercontent.com/52110065/201829440-4ba185fc-b787-47f6-98dc-5aa7e67d9064.png)
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
 
