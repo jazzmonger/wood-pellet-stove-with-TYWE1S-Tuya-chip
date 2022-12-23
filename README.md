@@ -107,7 +107,7 @@ type: custom:plotly-graph
 
 ![FD170D9C-2115-40DC-B2CB-CFCBC79D0ED4](https://user-images.githubusercontent.com/52110065/205919641-3d850cbc-5b52-4826-8e8e-4072a784e0c3.jpeg)
 
-My dev stove Command Module
+My dev stove Command Module after modifying the MCU and display board for new power level P5
 <img width="1365" alt="image" src="https://user-images.githubusercontent.com/52110065/209392856-158ed57f-7128-4268-abff-75737c9c6241.png">
 
 
