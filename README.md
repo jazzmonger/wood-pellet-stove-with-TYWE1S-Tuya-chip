@@ -113,4 +113,6 @@ My dev stove Command Module after modifying the MCU and display board for new po
 
 The last piece of the puzzle was to snoop on the uart line going from the display to the MCU control board.  this lets you echo messages from the display to home assistant as there is no other way to do it. See the discussions section on how i achieved this magic!
 
+<img src="https://user-images.githubusercontent.com/52110065/211300934-491579a7-015f-4c4d-9932-c056d6074059.jpeg" width=30% height=30%>   <img src="https://user-images.githubusercontent.com/52110065/211300939-f88f6053-2541-433f-be82-1dfb1940b813.jpeg" width=30% height=30%> 
+
 ![20230107_171807](https://user-images.githubusercontent.com/52110065/211175176-b1841d1c-f93c-4ed8-881f-b44f5f96258c.GIF)
