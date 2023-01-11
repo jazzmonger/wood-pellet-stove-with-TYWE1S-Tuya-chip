@@ -33,7 +33,8 @@ Ther are several others sold by Lowes, and other retailers that use the same dis
 There are a few displays that look slightly different but I believe all have the same basic internals. The displays have exactly the same function, just dufferent color faceplates.
 All will have a TYWE1S chip for wifi that can be reprogrammed.
 
-![image](https://user-images.githubusercontent.com/52110065/201829440-4ba185fc-b787-47f6-98dc-5aa7e67d9064.png)
+![591DD0B1-FA41-4E61-9443-4FD6ECA933A9](https://user-images.githubusercontent.com/52110065/211733976-057da24a-9941-4c60-8027-599b9a545b8c.jpeg)
+
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
 
 They work ok most of the time, but the stove malfunctions fairly frequently.  
