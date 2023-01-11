@@ -1,36 +1,28 @@
 #----------------------------------------------------------
+# No physical mods required to the display to use this file other than to get it to flash this code.
+# Adds local sensors for all attributes previously in Tuya cloud
+#
 substitutions:
-  device_name: house-wood-pellet-stove
-  device_description: House Wood Pellet Stove running ESPHome
-  friendly_name: House Wood Pellet Stove
+  device_name: wood-pellet-stove
+  device_description: Wood Pellet Stove running ESPHome
+  friendly_name: Wood Pellet Stove
 #----------------------------------------------------------
 external_components:
   - source: github://pr#4032
     components: tuya
     refresh: 0s
- 
 esphome:
   name: ${device_name}
   comment: ${device_description}
   platform: ESP8266
   board: esp01_1m
-#esp8266:
-#  board: esp01_1m
 api:
 ota:
 wifi:
   ssid: "REDACTED"
   password: "REDACTED"
   power_save_mode: none
-  # ...
-  manual_ip:
-    # Set this to the IP of the ESP
-    static_ip: 192.168.1.80
-    # Set this to the IP address of the router. Often ends with .1
-    gateway: 192.168.1.1
-    # The subnet of the network. 255.255.255.0 works for most home networks.
-    subnet: 255.255.255.0
-    dns1: 8.8.8.8
+#
 # Enable Home Assistant API
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -48,7 +40,7 @@ time:
 # Enable logging
 logger:
   level: DEBUG
-  baud_rate: 0
+#  baud_rate: 0
 
 uart:
   rx_pin: GPIO13
@@ -102,25 +94,25 @@ tuya:
 #These arent needed but greatly help in debugging
 sensor:
   - platform: "tuya"
-    name: "ESPH House Stove-Power On"
+    name: "Stove-Power On"
     sensor_datapoint: 1
   - platform: "tuya"
-    name: "ESPH House Stove-Error Code"
+    name: "Stove-Error Code"
     sensor_datapoint: 104
   - platform: "tuya"   
-    name: "ESPH House Stove-ECO Mode"
+    name: "Stove-ECO Mode"
     sensor_datapoint: 101
   - platform: "tuya"
-    name: "ESPH House Stove-Power Mode"
+    name: "Stove-Power Mode"
     sensor_datapoint: 4
   - platform: "tuya"
-    name: "ESPH House Stove-DP#105"
+    name: "Stove-DP#105"
     sensor_datapoint: 105
   - platform: "tuya"
-    name: "ESPH House Stove-Set Temp"
+    name: "Stove-Set Temp"
     sensor_datapoint: 106
   - platform: "tuya"
-    name: "ESPH House Stove-Current Temp"
+    name: "Stove-Current Temp"
     sensor_datapoint: 107
 #
   - platform: uptime
@@ -143,9 +135,8 @@ sensor:
 #
 climate:
   - platform: tuya
-    reports_fahrenheit: true
-    name: "House Wood Pellet Stove"
+    reports_fahrenheit: true #bug in these stoves required this fix
+    name: "Wood Pellet Stove"
     switch_datapoint: 1
     target_temperature_datapoint: 106
     current_temperature_datapoint: 107
-    
