@@ -65,18 +65,19 @@ also, the main problem with trying to control the stove by brute force manually 
 - use the new mod I got one of the ESPhome devs to make for me and you're golden.  its defined in the esphome config file.
 - if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I've provided should help mitigate this
 
-See the PR's for specific solutions to some of the errors and problems I've solved over the past year.
+See the Duscussions for specific solutions to some of the errors and problems I've solved over the past year.
 
-Have fun.
+Post a message in the discussions if you have comments/questions.  I've tried to be as complete as possible and probably seen every problem these stoves have.
+Have fun!
 
 **Data Points:**
 ```
-P1 - Power on (Heat)
+1 - Power on (Heat)
 4 - Mode P1/P2/P3P4
 101 - ECO1/ECO2
 104 - Error Code
-106 Set Temp
-107 - Current Teemp
+106 - Set desired room Temp
+107 - Current Temp
 108 - Pipe Temp
 109 - Protect Temp
 ```
