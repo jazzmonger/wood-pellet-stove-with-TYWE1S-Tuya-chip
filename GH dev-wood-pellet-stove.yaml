@@ -23,7 +23,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "dev-Wood-Pellet-Stove"
-    password: "Wine4You"
+    password: "********"
 captive_portal:
 #    
 time:
