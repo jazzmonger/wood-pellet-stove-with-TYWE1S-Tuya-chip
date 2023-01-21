@@ -1,0 +1,342 @@
+resources:
+  - url: /local/mini-graph-card-bundle.js?v=0.9.4
+    type: module
+  - url: https://fonts.googleapis.com/css2?family=Zen+Dots
+    type: css
+  - url: https://fonts.googleapis.com/css2?family=Moon+Dance
+    type: css
+background: var(--background-image)
+title: Van Slyke
+views:
+  - theme: Backend-selected
+    title: House
+    icon: mdi:fireplace
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+
+              {{states("sensor.house_display_text_sensor")}}
+            card_mod:
+              style: |
+                ha-card {
+                  font-family: 'Dotty';
+                  #background: url("/local/oled2.jpg");
+                  #background-size: 100% 400px;
+                  background-color: CornflowerBlue;
+                  font-size: 60px;
+                  color: blue;
+                  border: solid 1px var(--primary-color);
+                  text-align: center
+
+                  }
+          - type: entities
+            entities:
+              - entity: climate.house_wood_pellet_stove
+              - type: custom:slider-entity-row
+                entity: climate.house_wood_pellet_stove
+                full_row: true
+                toggle: true
+              - entity: select.esph_house_power_select
+              - entity: select.esph_house_eco_select
+                name: ECO1=Heat then OFF, ECO2=P1 then P4 Maintain
+                show_header_toggle: false
+                state_color: true
+          - show_name: true
+            show_icon: false
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.esph_house_stove_error_code
+                name: Error code
+              - entity: sensor.esph_house_stove_current_temp
+                name: Curr temp
+              - entity: sensor.esph_house_stove_current_temp
+                name: Smoothed
+              - entity: sensor.esph_house_stove_set_temp
+                name: Set temp
+              - entity: sensor.esph_house_stove_pipe_temp
+                name: Pipe
+            state_color: false
+          - type: entities
+            entities:
+              - entity: sensor.esph_house_bs_error_10
+                name: Goodbye Error (60=on)
+                secondary_info: last-changed
+              - entity: switch.house_stove_fan_socket_1
+                name: Cooling Fan @225F
+                secondary_info: last-changed
+              - entity: automation.house_pellet_stove_hvac_am_5_30_to_70
+                name: HVAC Schedule
+                secondary_info: last-changed
+              - entity: sensor.esph_house_error_code_decoded
+                name: Error Msg
+                secondary_info: last-changed
+              - entity: sensor.esph_house_stove_pipe_heating_or_cooling
+                name: Stove Exhaust temp is currently
+                state_color: true
+      - type: conditional
+        conditions:
+          - entity: sensor.esph_house_stove_error_code
+            state_not: '0'
+        card:
+          type: markdown
+          content: STOVE ERROR! Some Ting Wong
+          title: Pellet Stove Error
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.backups_stale
+            state: 'On'
+        card:
+          type: markdown
+          content: >-
+            Backups are stale! Please visit the "Home Assistant Google Drive
+            Backup" add-on status page for details.
+          title: Stale Backups!
+      - type: custom:plotly-graph
+        defaults:
+          entity:
+            texttemplate: <b> %{y}</b> %{customdata.unit_of_measurement}
+            show_value: null
+        hours_to_show: 4
+        entities:
+          - entity: sensor.esph_house_stove_pipe_temp
+            unit_of_measurement: Pipe Temp
+            yaxis: y1
+            show_value: true
+            right_margin: 40
+            line:
+              color: aqua
+              shape: spline
+              width: 1
+              smoothing: 0
+            filters:
+              - exponential_moving_average:
+                  alpha: 1.5
+          - entity: binary_sensor.house_stoke_fire_flag
+            yaxis: y3
+            show_value: true
+            right_margin: 40
+            line:
+              color: red
+              dash: dashdot
+        refresh_interval: 10
+        default_trace:
+          line:
+            width: 1
+        layout:
+          height: 500
+          yaxis:
+            zeroline: false
+            fixedrange: true
+            range:
+              - 100
+              - 350
+          yaxis2:
+            gridcolor: whitesmoke
+            fixedrange: true
+            zeroline: false
+          yaxis3:
+            gridcolor: whitesmoke
+            zeroline: false
+            range:
+              - 0
+              - 1.5
+            fixedrange: true
+          grid:
+            ygap: 0.07
+            rows: 1
+            columns: 1
+            pattern: coupled
+            roworder: top to bottom
+          xaxis:
+            rangeselector:
+              bgcolor: '#474747'
+              'y': 1.2
+              buttons:
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 2
+                  step: hour
+                - count: 3
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+      - type: entities
+        entities:
+          - entity: input_boolean.p5
+            name: Ultra Low Power
+          - entity: switch.esph_house_augerout_to_optoisolator_led
+            secondary_info: last-changed
+          - entity: binary_sensor.esph_house_auger_sensor_from_mcu
+          - entity: binary_sensor.house_stoke_fire_flag
+            name: Stoking?
+          - entity: sensor.esph_house_pellet_level_in_percent
+          - entity: sensor.esph_house_stove_pellet_level_smoothed
+          - entity: input_number.auger_on_time
+          - entity: input_number.auger_off_time
+          - entity: input_number.stoking_temp
+          - entity: button.esph_house_stove_restart
+          - entity: sensor.house_uptime_formatted
+          - entity: sensor.house_auger_counter_lighting
+      - type: custom:plotly-graph
+        defaults:
+          entity:
+            texttemplate: <b> %{y}</b> %{customdata.unit_of_measurement}
+            show_value:
+              right_margin: 10
+        entities:
+          - entity: sensor.esph_house_stove_set_temp
+            line:
+              color: white
+            show_value:
+              right_margin: 40
+          - entity: sensor.esph_house_stove_pellet_level_smoothed
+            line:
+              color: brown
+              shape: spline
+              width: 1
+          - entity: sensor.esph_house_stove_temp_sensor_smoothed
+            show_value:
+              right_margin: 40
+            line:
+              color: aqua
+              shape: spline
+              width: 1
+              smoothing: 1
+            lambda: |-
+              (ys, xs) => {
+                const MINUTES = 10 // <-- change here
+
+                const window_size_ms = 1000*60*MINUTES 
+                const result = {x:[], y:[]}
+                let x_next = +xs[0] + window_size_ms
+                let y_accum = 0
+                let y_count = 0
+                for (let i = 0; i < xs.length; i++) {
+                  const x = +xs[i]
+                  const y = +ys[i]
+                  if (x>x_next){
+                    result.y.push(y_accum/y_count)
+                    result.x.push(new Date(x_next))
+                    y_accum = 0
+                    y_count = 0
+                    x_next = +x + window_size_ms
+                  }
+                  if (y){
+                    // ignore unavailable/unknown state points
+                    y_accum += y
+                    y_count ++
+                  }
+                } 
+                return result;
+              }
+          - entity: sensor.esph_house_bs_error_yesno
+            transform: 'return x === ''no'' ? 65 : 60;'
+            name: Binary Sensor for Goodbye! error
+            show_value:
+              right_margin: 40
+        refresh_interval: 5
+        hours_to_show: 4
+        layout:
+          height: 600
+          yaxis:
+            zeroline: false
+            fixedrange: true
+          xaxis:
+            rangeselector:
+              bgcolor: '#474747'
+              'y': 1.2
+              buttons:
+                - count: 1
+                  step: minute
+                - count: 10
+                  step: minute
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 6
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 24
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+        view_layout:
+          position: main
+      - type: custom:plotly-graph
+        defaults:
+          entity:
+            texttemplate: <b> %{y}</b> %{customdata.unit_of_measurement}
+            show_value:
+              right_margin: 10
+            line:
+              shape: spline
+              width: 1
+              smoothing: 0
+        entities:
+          - entity: sensor.esph_house_stove_protect_temp
+            show_value:
+              right_margin: 40
+            color: yellow
+          - entity: sensor.esph_house_stove_current_temp
+            show_value:
+              right_margin: 40
+          - entity: sensor.esph_house_stove_current_temp
+            show_value:
+              right_margin: 40
+            line:
+              color: yellow
+              shape: spline
+              width: 1
+              smoothing: 1
+        refresh_interval: 10
+        hours_to_show: 1
+        layout:
+          height: 600
+          yaxis:
+            zeroline: false
+            fixedrange: true
+          xaxis:
+            rangeselector:
+              bgcolor: '#474747'
+              'y': 1.2
+              buttons:
+                - count: 1
+                  step: minute
+                - count: 10
+                  step: minute
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 6
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 24
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+        view_layout:
+          position: main
