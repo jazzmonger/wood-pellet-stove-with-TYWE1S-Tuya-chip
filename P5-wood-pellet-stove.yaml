@@ -29,7 +29,7 @@
 # errors on lighting and reduce smoke and ash on glass.  
 # hopper still lights, it just takes a bit longer
 #
-#Version 3.0 will have
+#Version 3.0 will have 
 #1) an independent Pipe temp sensor.  This will allow precise control over the burn pot.
 #it works ok now, but pipe temp sensor only updates once every 60s from TuyaMCU
 #so pellet adjustments like stoking can overshoot burn params.
