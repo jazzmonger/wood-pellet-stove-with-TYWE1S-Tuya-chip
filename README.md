@@ -86,14 +86,14 @@ Have fun!
 ```
 Error code is dp 104 (these come back from the server as numbers and are then mapped to error codes in the vendor app).  See my sensors.yaml file for how to decode them.
 
-Flashing the chip
-Remove it from the display module.  It unplugs easily.
+*Flashing the chip*
+Remove it from the display module.  It unplugs easily. or leave it in the display and use the power from the display to power the chip.  Ive done it both ways, either is fine.
 ![image](https://user-images.githubusercontent.com/52110065/201829197-9dbe42c8-2a3b-4ed6-bd42-652bc7af61cb.png)
 ![image](https://user-images.githubusercontent.com/52110065/201829293-01f14b40-6578-4f13-be3f-9fe1ad663b63.png)
 
 this link shows you how to do it: https://tasmota.github.io/docs/TuyaMCU-Devices/#costco-charging-essentials
 
-EDIT: for future reference, I used 3.3v, U0TX (goes to RX on the FTTD adapter)  and U0RX (goes to TX on the FTTD flashing interface adapter) and only grounded GPIO0 at bootup to flash the chip.  remove after its flashed. Also, connect 3.3V (not 5v) to the 3V3 pin on the TYWE1S chip, pin 4, or just use the stove to power the chip.
+EDIT: for future reference, if unplugging the module from the display, I used 3.3v, U0TX (goes to RX on the FTTD adapter)  and U0RX (goes to TX on the FTTD flashing interface adapter) Ground and then I only grounded GPIO0 at bootup to flash the chip.  remove this ground from GPIO0 after its flashed. Also, connect 3.3V (not 5v) to the 3V3 pin on the TYWE1S chip, pin 4, or justleave the module plugged in and use the stove to power the chip.
 WARNING - be careful when you solder wires to the board/chip to flash the chip.  I used breadbord wires w/pins and my VCC conneection broke at some point and it took most of the circuit board trace off both the board AND the chip.  I salvaged it with a Frankenstein jumper, but you've been warned! Just be careful and you should be fine.
 
 
