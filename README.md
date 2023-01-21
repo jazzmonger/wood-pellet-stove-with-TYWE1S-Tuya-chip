@@ -65,24 +65,26 @@ also, the main problem with trying to control the stove by brute force manually 
 - Flash ESPHome to the TWYE1S chip using TuyaMCU. This is the module that relays info to and from the stoves control board and also provides a WiFi interface to the Tuya iOT cloud platform  
 - use the new mod I got one of the ESPhome devs to make for me and you're golden.  its defined in the esphome config file.
 - if your stove is turning off for no reason w/ "Goodbye" displayed on the screen, then the automations I've provided should help mitigate this
+- go a step further and make a few *very* simple mods to the display and control board and you get FULL control over this stove WITHOUT sacraficing any of the safety features built into this stove.
 
 See the Duscussions for specific solutions to some of the errors and problems I've solved over the past year.
 
-Post a message in the discussions if you have comments/questions.  I've tried to be as complete as possible and probably seen every problem these stoves have.
+Post a message in the discussions for basic questions or create a PR (problem report) if you are doing mods to your stove and run into issues.  I've tried to be as complete as possible and probably seen every problem these stoves have and then some.
 Have fun!
 
-**Data Points:**
+**Data Points used by TuyaMCU and Tuya cloud:**
 ```
 1 - Power on (Heat)
 4 - Mode P1/P2/P3P4
 101 - ECO1/ECO2
 104 - Error Code
+105 - random, unused
 106 - Set desired room Temp
 107 - Current Temp
 108 - Pipe Temp
 109 - Protect Temp
 ```
-Error code - 104 (these come back from the server as numbers and are then mapped to error codes in the vendor app)
+Error code is dp 104 (these come back from the server as numbers and are then mapped to error codes in the vendor app).  See my sensors.yaml file for how to decode them.
 
 Flashing the chip
 Remove it from the display module.  It unplugs easily.
@@ -91,8 +93,8 @@ Remove it from the display module.  It unplugs easily.
 
 this link shows you how to do it: https://tasmota.github.io/docs/TuyaMCU-Devices/#costco-charging-essentials
 
-EDIT: for future reference, I used 3.3v, U0TX (goes to RX on the FTTD adapter)  and U0RX (goes to TX on the FTTD adapter) to my flashing interface and only grounded GPIO0 to flash the chip. Also, connect 3.3V (not 5v) to the 3V3 pin on the TYWE1S chip, pin 4.
-WARNING - be careful when you solder wires to the board/chip to flash the chip.  I used breadbord wires w/pins and my VCC conneection broke and it took most of the circuit board trace off both the board AND the chip.  I salvaged it with a Frankenstein jumper, but you've been warned!
+EDIT: for future reference, I used 3.3v, U0TX (goes to RX on the FTTD adapter)  and U0RX (goes to TX on the FTTD flashing interface adapter) and only grounded GPIO0 at bootup to flash the chip.  remove after its flashed. Also, connect 3.3V (not 5v) to the 3V3 pin on the TYWE1S chip, pin 4, or just use the stove to power the chip.
+WARNING - be careful when you solder wires to the board/chip to flash the chip.  I used breadbord wires w/pins and my VCC conneection broke at some point and it took most of the circuit board trace off both the board AND the chip.  I salvaged it with a Frankenstein jumper, but you've been warned! Just be careful and you should be fine.
 
 
 
