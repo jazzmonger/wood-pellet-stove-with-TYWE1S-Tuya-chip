@@ -30,7 +30,7 @@ wifi:
     password: "REDACTED"
 
 captive_portal:
-    
+  
 time:
   - platform: homeassistant
     id: time_homeassistant
