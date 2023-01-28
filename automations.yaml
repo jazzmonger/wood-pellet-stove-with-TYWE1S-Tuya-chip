@@ -33,6 +33,7 @@ action:
           - service: switch.turn_off
             data: {}
             target:
+            
               entity_id: switch.house_stove_fan_socket_1
 mode: single
 
