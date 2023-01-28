@@ -6,7 +6,7 @@ resources:
   - url: https://fonts.googleapis.com/css2?family=Moon+Dance
     type: css
 background: var(--background-image)
-title: Van Slyke
+title: Your title
 views:
   - theme: Backend-selected
     title: House
@@ -85,16 +85,6 @@ views:
           type: markdown
           content: STOVE ERROR! Some Ting Wong
           title: Pellet Stove Error
-      - type: conditional
-        conditions:
-          - entity: binary_sensor.backups_stale
-            state: 'On'
-        card:
-          type: markdown
-          content: >-
-            Backups are stale! Please visit the "Home Assistant Google Drive
-            Backup" add-on status page for details.
-          title: Stale Backups!
       - type: custom:plotly-graph
         defaults:
           entity:
