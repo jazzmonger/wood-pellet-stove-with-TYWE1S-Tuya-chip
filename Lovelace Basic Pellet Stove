@@ -1,0 +1,51 @@
+
+  - theme: Backend-selected
+    title: Basic Pellet Stove Panel
+    path: basic-pellet-stove-panel
+    icon: mdi:fireplace
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: climate.house_wood_pellet_stove
+              - type: custom:slider-entity-row
+                entity: climate.house_wood_pellet_stove
+                full_row: true
+                toggle: true
+              - entity: select.esph_house_power_select
+              - entity: select.esph_house_eco_select
+                name: ECO1=Heat then OFF, ECO2=P1 then P4 Maintain
+                show_header_toggle: false
+                state_color: true
+          - show_name: true
+            show_icon: false
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.esph_house_stove_error_code
+                name: Error code
+              - entity: sensor.esph_house_stove_current_temp
+                name: Curr temp
+              - entity: sensor.esph_house_stove_current_temp
+                name: Smoothed
+              - entity: sensor.esph_house_stove_set_temp
+                name: Set temp
+              - entity: sensor.esph_house_stove_pipe_temp
+                name: Pipe
+            state_color: false
+          - type: entities
+            entities:
+              - entity: switch.house_stove_fan_socket_1
+                name: Cooling Fan @225F
+                secondary_info: last-changed
+              - entity: automation.house_pellet_stove_hvac_am_5_30_to_70
+                name: HVAC Schedule
+                secondary_info: last-changed
+              - entity: sensor.esph_house_error_code_decoded
+                name: Error Msg
+                secondary_info: last-changed
+              - entity: sensor.esph_house_stove_pipe_heating_or_cooling
+                name: Stove Exhaust temp is currently
+                state_color: true
