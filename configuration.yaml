@@ -1,0 +1,18 @@
+#add these binary sensors to your configuration.yaml file
+#binary_sensor: #<-uncomment this line if you dont already have a binary sensors section
+#House wood Stove binary_sensor:
+  - platform: trend
+    sensors:
+      esph_house_stove_pipe_temp_falling:
+        entity_id: sensor.esph_house_stove_pipe_temp
+        sample_duration: 120
+        max_samples: 50
+        min_gradient: -0.01 #36 degrees= = 50/(60*60)
+        device_class: cold
+
+      esph_house_stove_pipe_temp_rising:
+        entity_id: sensor.esph_house_stove_pipe_temp
+        sample_duration: 120
+        max_samples: 50
+        min_gradient: 0.01 #36F
+        device_class: heat         
