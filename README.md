@@ -115,10 +115,10 @@ My dev stove Command Module after modifying the MCU and display board for the ne
 <img width="1365" alt="image" src="https://user-images.githubusercontent.com/52110065/209392856-158ed57f-7128-4268-abff-75737c9c6241.png">
 
 
-Aother piece of the puzzle was to snoop on the RX UART line going from the display to the MCU control board.  this lets you echo messages from the display to home assistant as there is no other way to do it. its a little flakey at times (its just display messages), but mostly works. See the discussions section on how i achieved this bit of UART magic!
+Another piece of the puzzle was to snoop on the RX UART line going from the display to the MCU control board.  this lets you echo messages from the display to home assistant as there is no other way to do it. its a little flakey at times (its just display messages), but mostly works. See the discussions section on how i achieved this bit of UART magic!
 
 <img src="https://user-images.githubusercontent.com/52110065/211300934-491579a7-015f-4c4d-9932-c056d6074059.jpeg" width=30% height=30%>   <img src="https://user-images.githubusercontent.com/52110065/211300939-f88f6053-2541-433f-be82-1dfb1940b813.jpeg" width=30% height=30%> 
 
 ![20230107_171807](https://user-images.githubusercontent.com/52110065/211175176-b1841d1c-f93c-4ed8-881f-b44f5f96258c.GIF)
 
-And finally, while i have had the stove burn for 2-3 days straight, it does go out if the uktra-low burn pot settings arent just right.  So, I add a wire from the exhaust temp probe circuit to the display so I can measure realtime temp updates (instead of at 1 min intervals). This helps to better control the burn pot and keep the fire from going out when on "ultra low" P5. Again, see Discussions for more info.
+And finally, while i have had the stove burn for 2-3 days straight, it does go out if the ultra-low burn pot settings arent just right.  So, I add a wire from the exhaust temp probe circuit to the display so I can measure realtime temp updates (instead of at 1 min intervals). This helps to better control the burn pot and keep the fire from going out when on "ultra low" P5. Again, see Discussions for more info.
