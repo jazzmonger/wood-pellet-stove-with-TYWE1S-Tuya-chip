@@ -92,6 +92,7 @@ Error code is dp 104 (these come back from the server as numbers and are then ma
 Carefully remove it from the display module.  It unplugs easily. or leave it in the display and use the power from the display to power the chip.  Ive done it both ways, either is fine.
 ![image](https://user-images.githubusercontent.com/52110065/201829197-9dbe42c8-2a3b-4ed6-bd42-652bc7af61cb.png)
 ![image](https://user-images.githubusercontent.com/52110065/201829293-01f14b40-6578-4f13-be3f-9fe1ad663b63.png)
+![2A18441F-1FBA-4847-B41D-B65DCFCA9A34](https://user-images.githubusercontent.com/52110065/218248705-fda2501b-179f-4dc1-82fa-ea9c8f91bd60.jpeg)
 
 this link shows you how to do it: https://tasmota.github.io/docs/TuyaMCU-Devices/#costco-charging-essentials
 
