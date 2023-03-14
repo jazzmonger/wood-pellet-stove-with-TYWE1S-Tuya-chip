@@ -123,3 +123,8 @@ Another piece of the puzzle was to snoop on the RX UART line going from the disp
 ![20230107_171807](https://user-images.githubusercontent.com/52110065/211175176-b1841d1c-f93c-4ed8-881f-b44f5f96258c.GIF)
 
 And finally, while i have had the stove burn for 2-3 days straight, it does go out if the ultra-low burn pot settings arent just right.  So, I add a wire from the exhaust temp probe circuit to the display so I can measure realtime temp updates (instead of at 1 min intervals). This helps to better control the burn pot and keep the fire from going out when on "ultra low" P5. Again, see Discussions for more info.
+
+
+Build and use at your own risk!
+
+I will not be responsible for any damages including but not limited to: errors or omissions, loss of life, or property damage. You have been warned.
