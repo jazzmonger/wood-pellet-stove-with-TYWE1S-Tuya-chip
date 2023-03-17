@@ -1,0 +1,373 @@
+views:
+  - theme: Backend-selected
+    title: House
+    icon: mdi:fireplace
+    badges: []
+    cards:
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.feeding_ok_flag
+            state: 'off'
+        card:
+          type: markdown
+          content: Cat Food Empty!!! FILL IT
+          title: Cat Food Empty
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+
+              {{states("sensor.house_display_text_sensor")}}
+            card_mod:
+              style: |
+                ha-card {
+                  font-family: 'Dotty';
+                  #background: url("/local/oled2.jpg");
+                  #background-size: 100% 400px;
+                  background-color: CornflowerBlue;
+                  font-size: 60px;
+                  color: blue;
+                  border: solid 1px var(--primary-color);
+                  text-align: center
+
+                  }
+          - type: entities
+            entities:
+              - entity: climate.house_wood_pellet_stove
+              - type: custom:slider-entity-row
+                entity: climate.house_wood_pellet_stove
+                full_row: true
+                toggle: true
+              - entity: select.house_power_select
+              - entity: select.house_eco_select
+                name: ECO1=Heat then OFF, ECO2=P1 then P4 Maintain
+                show_header_toggle: false
+                state_color: true
+          - show_name: true
+            show_icon: false
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.house_stove_error_code
+                name: Error code
+              - entity: sensor.house_stove_current_temp
+                name: Curr temp
+              - entity: sensor.house_stove_current_temp
+                name: Smoothed
+              - entity: sensor.house_stove_set_temp
+                name: Set temp
+              - entity: sensor.house_uart_pipe_temp
+                name: UART Pipe
+            state_color: false
+          - type: entities
+            entities:
+              - entity: switch.house_stove_fan_socket_1
+                name: Cooling Fan @225F
+                secondary_info: last-changed
+              - entity: automation.house_pellet_stove_hvac_am_5_30_to_70
+                name: HVAC Schedule
+                secondary_info: last-changed
+              - entity: sensor.house_error_code_decoded
+                name: Error Msg
+                secondary_info: last-changed
+              - entity: sensor.house_stove_pipe_heating_or_cooling
+                name: Stove Exhaust temp is currently
+                state_color: true
+              - entity: switch.tantan_176
+              - entity: automation.fix_wood_stove_error
+              - entity: automation.house_pellet_stove_turn_on_if_temp_60
+              - entity: sensor.house_wifi_signal
+              - entity: sensor.house_wifi_signal_db
+      - type: conditional
+        conditions:
+          - entity: sensor.house_stove_error_code
+            state_not: '0'
+        card:
+          type: markdown
+          content: STOVE ERROR! Some Ting Wong
+          title: Pellet Stove Error
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.backups_stale
+            state: 'On'
+        card:
+          type: markdown
+          content: >-
+            Backups are stale! Please visit the "Home Assistant Google Drive
+            Backup" add-on status page for details.
+          title: Stale Backups!
+      - type: vertical-stack
+        cards:
+          - type: custom:mini-climate
+            entity: climate.bedroom_heater
+            indicators:
+              power:
+                icon: mdi:power-plug
+                source:
+                  entity: switch.bedroom_heater_plug
+                  values:
+                    'on': heating
+                    'off': idle
+              power_consumption:
+                icon: mdi:flash
+                unit: W
+                round: 1
+                source:
+                  entity: sensor.bedroom_heater_plug_power
+            temperature:
+              unit: °F
+              round: 1
+            hvac_mode:
+              style: '(value, entity) => ({ color: ''red'' })'
+              source:
+                'off':
+                  icon: mdi:power-plug-off-outline
+                  name: 'off'
+                heat:
+                  icon: mdi:fire
+                  name: heat
+            change_action: >
+              (selected, entity) => this.call_service('climate',
+              'set_hvac_mode', { entity_id: entity.entity_id, hvac_mode:
+              selected })
+      - type: custom:plotly-graph
+        defaults:
+          entity:
+            show_value: true
+        hours_to_show: 1
+        entities:
+          - entity: sensor.house_stoking_sensor
+            filters:
+              - filter: y !== null && +y > 100
+            yaxis: y1
+            show_value: false
+            line:
+              color: red
+              dash: dashdot
+          - entity: sensor.house_uart_pipe_temp
+            name: Smoothing applied
+            filters:
+              - median:
+                  window_size: 50
+                  extended: true
+                  centered: true
+            yaxis: y1
+            show_value: true
+            line:
+              color: green
+              shape: spline
+              width: 2
+              smoothing: 1
+          - entity: sensor.house_stove_pipe_temp
+            unit_of_measurement: Pipe Temp
+            yaxis: y1
+            show_value: true
+            line:
+              color: yellow
+              shape: spline
+              width: 2
+              smoothing: 0
+        autorange_after_scroll: true
+        refresh_interval: auto
+        default_trace:
+          line:
+            width: 2
+        layout:
+          height: 500
+          yaxis:
+            zeroline: false
+            fixedrange: true
+            range:
+              - 100
+              - 390
+          yaxis2:
+            gridcolor: whitesmoke
+            fixedrange: false
+            zeroline: false
+            range:
+              - 100
+              - 390
+          yaxis3:
+            gridcolor: whitesmoke
+            zeroline: true
+            fixedrange: true
+          grid:
+            ygap: 1
+            rows: 1
+            columns: 1
+            pattern: coupled
+            roworder: top to bottom
+          xaxis:
+            rangeselector:
+              bgcolor: '#474747'
+              'y': 1.3
+              buttons:
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 2
+                  step: hour
+                - count: 3
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+      - type: entities
+        entities:
+          - entity: input_boolean.house_p5
+            name: Ultra Low Power
+          - entity: switch.house_augerout_to_optoisolator_led
+            secondary_info: last-changed
+          - entity: binary_sensor.house_auger_sensor_from_mcu
+          - entity: binary_sensor.house_stoke_fire_flag
+            name: Stoking?
+          - entity: sensor.house_pellet_level_processed_filtered
+            name: Pellet Level
+          - entity: sensor.house_raw_pellet_level
+          - entity: input_number.house_auger_on_time
+          - entity: input_number.house_auger_off_time
+          - entity: input_number.house_stoking_temp
+          - entity: input_number.house_stoking_on_time
+          - entity: input_number.house_stoking_off_time
+          - entity: sensor.house_uptime_formatted
+          - entity: sensor.house_auger_counter_lighting
+          - entity: button.esph_house_stove_restart
+      - type: custom:plotly-graph
+        hours_to_show: 6
+        defaults:
+          entity:
+            show_value: true
+        entities:
+          - entity: weather.keul_daynight
+            attribute: temperature
+            internal: false
+            yaxis: y2
+            line:
+              color: red
+            smoothing: 1
+          - entity: sensor.house_stove_set_temp
+            yaxis: y1
+            line:
+              color: aqua
+          - entity: sensor.house_stove_current_temp
+            yaxis: y1
+            filters:
+              - exponential_moving_average:
+                  alpha: 0.07
+            line:
+              color: yellow
+              shape: spline
+              width: 1.5
+              smoothing: 1
+        refresh_interval: auto
+        default_trace:
+          line:
+            width: 2
+        layout:
+          height: 500
+          yaxis:
+            fixedrange: true
+            zeroline: false
+            title: Sensor Temps
+          yaxis2:
+            title: Outside Temp
+            gridcolor: whitesmoke
+            fixedrange: false
+            zeroline: false
+            range:
+              - 10
+              - 60
+          yaxis3:
+            gridcolor: whitesmoke
+            zeroline: true
+            fixedrange: false
+          grid:
+            ygap: 0.07
+            rows: 1
+            columns: 1
+            pattern: coupled
+            roworder: top to bottom
+          xaxis:
+            rangeselector:
+              bgcolor: '#474747'
+              'y': 1.3
+              buttons:
+                - count: 30
+                  step: minute
+                - count: 1
+                  step: hour
+                - count: 2
+                  step: hour
+                - count: 3
+                  step: hour
+                - count: 12
+                  step: hour
+                - count: 1
+                  step: day
+                - count: 2
+                  step: day
+                - count: 7
+                  step: day
+      - type: vertical-stack
+        cards:
+          - type: custom:plotly-graph
+            defaults:
+              entity:
+                show_value: true
+            entities:
+              - entity: sensor.house_raw_pellet_level
+                internal: true
+                line:
+                  color: red
+                  shape: spline
+                  width: 2
+              - entity: sensor.house_pellet_level_processed_filtered
+                line:
+                  color: yellow
+                  shape: spline
+                  width: 2
+                  smoothing: 1
+            refresh_interval: auto
+            hours_to_show: 18
+            layout:
+              height: 400
+              yaxis:
+                zeroline: false
+                fixedrange: true
+              xaxis:
+                rangeselector:
+                  bgcolor: '#474747'
+                  'y': 1.2
+                  buttons:
+                    - count: 1
+                      step: minute
+                    - count: 10
+                      step: minute
+                    - count: 30
+                      step: minute
+                    - count: 1
+                      step: hour
+                    - count: 6
+                      step: hour
+                    - count: 12
+                      step: hour
+                    - count: 24
+                      step: hour
+                    - count: 1
+                      step: day
+                    - count: 2
+                      step: day
+                    - count: 7
+                      step: day
+            view_layout:
+              position: main
+          - type: entities
+            entities:
+              - entity: automation.pellet_stove_house_pellets_low
+                secondary_info: last-changed
