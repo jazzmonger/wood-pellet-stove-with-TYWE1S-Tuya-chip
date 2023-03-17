@@ -3,9 +3,9 @@ Wood Pellet Stove with Tuya TYWE1S chip flashed with ESPHome gives you COMPLETE 
 <img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867278-c315a1e4-ac1a-437a-a0ab-9b436e2e7e1c.png"><img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867295-c3bf5f91-b33f-4f54-bfee-15c9a0ac25a4.png"><img width="190" alt="image" src="https://user-images.githubusercontent.com/52110065/206867320-d2f332c3-bdea-4863-acfd-e0982a6786ba.png"><img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867354-89dded84-38fb-4934-8f31-ad49d3f32fe0.png">
 
 
-
-
 This project dives deep into the TuyaMCU parts of ESPHome that can be used to control various Tuya cloud based pellet stoves.  While the ESPHome TuyaMCU implementation is mostly robust, getting information on what it does and how it does it and why has been challenging to say the least.  I hope this helps someone else. I now have two of these stoves running ESPHome and FINALLY they function the way I want them to, not how some idiotic low-budget coder tried to program them.  I used to wake up cursing my pellet stoves.  Now I just wake up all warm and fuzzy.
+
+The Advanced version completely replaces the Tuya Wifi module with an ESP32 D1 Mini chip and adds a whole new world of control to these stoves.
 
 The Discussions section also has LOTs of info: https://github.com/jazzmonger/wood-stove-with-TYWE1S-Tuya-chip/discussions
 
