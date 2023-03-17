@@ -112,8 +112,8 @@ type: custom:plotly-graph
 
 ![FD170D9C-2115-40DC-B2CB-CFCBC79D0ED4](https://user-images.githubusercontent.com/52110065/205919641-3d850cbc-5b52-4826-8e8e-4072a784e0c3.jpeg)
 
-My dev stove Command Module after modifying the MCU and display board for the new "ultra low" power level P5
-<img width="1365" alt="image" src="https://user-images.githubusercontent.com/52110065/209392856-158ed57f-7128-4268-abff-75737c9c6241.png">
+My "Ultimate" Pellet Stove Command Module after completely replacing the wifi module and Tuya chip with an ESP32 D1 mini. Yes, it can be done.
+
 
 
 Another piece of the puzzle was to snoop on the RX UART line going from the display to the MCU control board.  this lets you echo messages from the display to home assistant as there is no other way to do it. its a little flakey at times (its just display messages), but mostly works. See the discussions section on how i achieved this bit of UART magic!
@@ -124,6 +124,7 @@ Another piece of the puzzle was to snoop on the RX UART line going from the disp
 
 And finally, while i have had the stove burn for 2-3 days straight, it does go out if the ultra-low burn pot settings arent just right.  So, in the "Ultimate vesion" I add a wire to monitor the UART messages from the main MCU that contain temp updates so I can measure realtime temp updates (instead of at 1 min intervals via the Tuya crap). This helps to better control the burn pot and keep the fire from going out when on "Ultra Low" setting. Again, see Discussions for more info.
 
+![image](https://user-images.githubusercontent.com/52110065/225830670-3f3f7856-ca7b-4213-b8f9-3edee070bb25.png)
 
 Build and use at your own risk!
 
