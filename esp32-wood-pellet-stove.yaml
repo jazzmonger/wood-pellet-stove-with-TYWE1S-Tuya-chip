@@ -1,7 +1,7 @@
 #----------------------------------------------------------
 # TUYA WOOD PELLET STOVE Converted to ESP32
 # version; 3.0.0
-# date: 03-16-23
+# date: 03-20-23
 # 3.0 converted to ESP32, added realtime exhaust sensor
 # 2.0 added fire stoking function
 # 1.0.0 added a Power Level P5 (ultra low power) that is fully configurable while in ECO2 mode.
@@ -114,7 +114,7 @@ uart:
                 id(MCUrawString).publish_state("Idling - ECO2");  
             }
 #from Display control board RX pin to MCU board RX pin UART3
-#gives us real time pipe temps
+#gives us real time exhaust pipe temps in middle byte
   - id: mcu_uart_RXpin
     rx_pin: GPIO21 #attach new wire to RX labled pin on DISPLAY board
     baud_rate: 2400
@@ -199,7 +199,7 @@ esphome:
           condition:
              - sensor.in_range: #stove is lit
                 id: stove_pipe_temp
-                above: 140.0 # exactly the point it switches 
+                above: 140.0  # exactly the point it switches from "lighting"
           then:
              - lambda: id(MCUrawString).publish_state("Stabilization");          
           else:
@@ -328,7 +328,7 @@ binary_sensor:
             else:
               - logger.log: "GPIO16 sw = OFF"                                    
 #
-    #MCU CONTROL BOARD AUGER SENSOR    
+# MCU CONTROL BOARD AUGER SENSOR    
   - platform: gpio
     pin: GPIO27  # input only pin
     internal: false # this is just a flag you expose and watch in Lovelace
@@ -431,12 +431,10 @@ text_sensor:
     on_value:   # When value simply changes
       # - logger.log: "0MCUrawString.on_value.entered"    
       - delay: 0.1s
-      #- switch.turn_off: auger_output_to_optoisolator # just to be safe
       - if:
           condition:
   #           and:
               - binary_sensor.is_on: p5z
-             # - lambda: return id(MCUrawString).state == "Idling - ECO2";
               - text_sensor.state: #Stove is idling in ECO2 mode
                   id: hvac_action
                   state: 'idle'
@@ -496,7 +494,7 @@ text_sensor:
             - lambda: id(MCUrawString).publish_state("Stabilazation");
             - script.stop: new_auger_motor_power_level      
 #
-i2c:
+i2c: # For time of flight sensor
   sda: 5
   scl: 33
 
@@ -506,26 +504,28 @@ sensor:
     name: "${location} WiFi Signal db"
     update_interval: 10s 
     id: wifi_signal_db 
-  - platform: copy # Reports the WiFi signal strength in %
+#
+    - platform: copy # Reports the WiFi signal strength in %
     source_id: wifi_signal_db
     name: "${location} WiFi Signal %"
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"        
-  - platform: debug
+#
+    - platform: debug
     free:
       name: "${location} Heap Free"
-    
+#      
   - platform: template
     id: pipe_converted
     name: "${location} UART Pipe Temp"
     on_value:   # When value simply changes
       then:     
-        - logger.log:
-            format: "pipe_converted= %f"
-            args: ['x']    
-            #args: ['id(pipe_converted)']    
+ #       - logger.log:
+ #           format: "pipe_converted= %f"
+ #           args: ['x']    
+ #           #args: ['id(pipe_converted)']    
         - if:
             condition:
               and:
@@ -533,7 +533,7 @@ sensor:
                 - lambda: return id(MCUrawString).state != "Lighting";
                 - sensor.in_range: 
                       id: pipe_converted
-                      above: 135.0                  
+                      above: 125.0                  
                 - binary_sensor.is_on: p5z
                 #Adjust the stoking_temp value in HA to keep pot from burning out
                 - lambda: |-
@@ -543,9 +543,9 @@ sensor:
                       return false;
                     }
             then:  
-              - logger.log: 
-                  format: "dp108.on_value.EXECUTING SCRIPT Stoking FIRE | stoking_temp= %f"
-                  args: ['id(stoking_temp).state']
+#              - logger.log: 
+#                  format: "dp108.on_value.EXECUTING SCRIPT Stoking FIRE | stoking_temp= %f"
+#                  args: ['id(stoking_temp).state']
               - globals.set: #expose to ha
                     id: stoking_flag_global
                     value: 'true'     
@@ -561,10 +561,7 @@ sensor:
 
   - platform: template
     name: ${location} Auger Counter (lighting)
-    id: auger_counter
-    # do this whereever you want it to report back into HA's sensor value
-    #   - lambda: id(auger_counter).publish_state(id(auger_count_global));
-    
+    id: auger_counter   
 #get these object values from home assistant 
   - platform: homeassistant
     id: auger_off_timez
@@ -573,17 +570,17 @@ sensor:
   - platform: homeassistant
     id: auger_on_timez
     entity_id: input_number.${location}_auger_on_time #helper in home assistant
-    
+#    
   - platform: homeassistant
     id: stoking_temp
     entity_id: input_number.${location}_stoking_temp #helper in home assistant
     force_update: true
-
+#
   - platform: homeassistant
     id: stoking_on_time
     entity_id: input_number.${location}_stoking_on_time #helper in home assistant
     force_update: true
-
+#
   - platform: homeassistant
     id: stoking_off_time
     entity_id: input_number.${location}_stoking_off_time #helper in home assistant
@@ -626,17 +623,21 @@ sensor:
     name: "${location} Stove-Error Code"
     id: error_code
     sensor_datapoint: 104
-  - platform: "tuya"
+#
+    - platform: "tuya"
     name: "${location} Stove-Power Mode"
     sensor_datapoint: 4
-  - platform: "tuya"
+#
+    - platform: "tuya"
     name: "${location} Stove-Set Temp"
     sensor_datapoint: 106
-  - platform: "tuya"
+#
+    - platform: "tuya"
     id: current_temp
     name: "${location} Stove-Current Temp"
     sensor_datapoint: 107
-  - platform: "tuya"
+#
+    - platform: "tuya"
     name: "${location} Stove-Pipe Temp"
     id: stove_pipe_temp
     sensor_datapoint: 108
@@ -644,7 +645,7 @@ sensor:
   - platform: "tuya"
     name: "${location} Stove-Protect Temp"
     sensor_datapoint: 109
-#more utility sensors
+#
   - platform: uptime
     internal: false
     name: ${friendly_name} Uptime
@@ -666,19 +667,6 @@ select:
       3: P4-Low      
     on_value: #store lat value so it can be restored on power/boot up
       - lambda: id(power_select_lastvalue) = i;
-
-  # - platform: "tuya"
-  #   tuya_id: "${location}"
-  #   name: "Power_SelectX"
-  #   id: power_selectx
-  #   enum_datapoint: 4
-  #   options:
-  #     0: P1-High
-  #     1: P2-Med High
-  #     2: P3-Med Low
-  #     3: P4-Low      
-  #   on_value:
-  #     - lambda: id(power_select_lastvalue) = i;      
 #
   - platform: "tuya"
     tuya_id: "${location}"
@@ -722,7 +710,7 @@ switch:
     name: "${location} AugerOut to optoisolator +LED"
     id: auger_output_to_optoisolator  
     inverted: yes    
-#FAILSAFE. IF AUGER GETS STUCK on for over 5s, TURN IT OFF
+#FAILSAFE. IF AUGER EVER GETS STUCK on for over 5s, TURN IT OFF
     on_turn_on:
       - delay: 5s
       - switch.turn_off: auger_output_to_optoisolator
@@ -756,11 +744,10 @@ climate:
       min_temperature: 15.5 #celcius
       max_temperature: 23
       temperature_step: 1
-
 ota:
 wifi:
 #  use_address: 192.168.1.xxx # use when renaming this node
-  ssid: "Van Slyke"
+  ssid: !secret wifi_ssid
   password: !secret wifi_password
   power_save_mode: none
   use_address: 192.168.1.192
