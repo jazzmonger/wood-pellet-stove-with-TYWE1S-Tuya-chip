@@ -13,7 +13,7 @@ TuyaMCU Docs: https://esphome.io/components/tuya.html
 
 The Tuya TYWE1S chips and those like it are basically just repackaged ESP8266 modules.  All the functions of the 8266 are all there.  The TuyaMCU libray in ESPHome provides an abstraction layer between the display/control module and Home Assistant. It allows control messages to be both Sent and Received from the device the module is controlling. In this case, our stove's main brain/control unit, or MCU as its called.
 
-I'm an electronic engineer/designer by education and training, not a trained programmer, but ESPHome makes all this pretty easy. That said, I LOVE hacking this stuff, so  start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
+I'm an electronic engineer/designer by education and training, not a professional programmer, but thankfully ESPHome makes all this pretty easy. That said, I LOVE hacking this stuff, so  start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
 
 **Product Models:** 
 Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
