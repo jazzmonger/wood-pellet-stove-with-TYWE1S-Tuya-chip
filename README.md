@@ -13,11 +13,7 @@ TuyaMCU Docs: https://esphome.io/components/tuya.html
 
 The Tuya TYWE1S chips and those like it are basically just repackaged ESP8266 modules.  All the functions of the 8266 are all there.  The TuyaMCU libray in ESPHome provides an abstraction layer between the display/control module and Home Assistant. It allows control messages to be both Sent and Received from the device the module is controlling. In this case, our stove's main brain/control unit, or MCU as its called.
 
-I'm an electronic engineer/designer by education and training, not a trained programmer, but ESPHome makes all this pretty easy.  When chips are soldered in place on a commercial circuit board and each pin has a live trace going to and from it, then we, as trained engineers, MUST assume that those pins are being used for some purpose, hence, likely not available for use.  but...
-
-That said, I LOVE hacking this stuff and just because a trace is there doesnt mean the pin cant be used.  Best practice is to ground unused inputs and outputs on all integrated circuit chips, with or without using current limiting resistors.  However, in the case of multilayer PCBs, it is next to impossible for the average person to know what or how to trace those pins to see if they are being used.  But, often they can be repurposed because in applications such as this, the Tuya chip is just there to provide a WiFi function, and the GPIOs are just sitting there idle. Literally none of the GPIOs on this chip do anthing useful. More on this later.
-
-We start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
+I'm an electronic engineer/designer by education and training, not a trained programmer, but ESPHome makes all this pretty easy. That said, I LOVE hacking this stuff, so  start with replacing the buggy, error prone Tuya control software by flashing ESPHome onto the display's TYE1S Tuya communications & controller chip.
 
 **Product Models:** 
 Cleveland Ironworks Wood Pellet Stove (there are 4 models, all use the same controller).  
