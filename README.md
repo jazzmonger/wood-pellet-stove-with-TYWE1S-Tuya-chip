@@ -35,7 +35,7 @@ UPDATE: if the chip is the blue D1 Mini on the daughterboard, and the app you us
 
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/52110065/201829503-b268795e-132c-4b8f-9ec9-96a7dc361b03.png">
 
-They work ok some of the time, but the stove malfunctions fairly frequently.  
+The wood stoves work ok some of the time, but the stove malfunctions fairly frequently.  
 Common mafunctions include:
 - randomly turning off w/ the msg "Goodbye!" on the display.
 - pellets failing to light in the hopper
