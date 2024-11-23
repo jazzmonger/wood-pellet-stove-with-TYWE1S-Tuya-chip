@@ -1,7 +1,7 @@
 Wood Pellet Stove with Tuya TYWE1S chip flashed with ESPHome gives you COMPLETE local control over ALL stove functions (and adds some).
 
 The Discussions section also has LOTs of info: https://github.com/jazzmonger/wood-stove-with-TYWE1S-Tuya-chip/discussions
-Including thr discussion of a new circuit board design.
+Including the discussion of a new circuit board design.
 
 <img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867278-c315a1e4-ac1a-437a-a0ab-9b436e2e7e1c.png"><img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867295-c3bf5f91-b33f-4f54-bfee-15c9a0ac25a4.png"><img width="190" alt="image" src="https://user-images.githubusercontent.com/52110065/206867320-d2f332c3-bdea-4863-acfd-e0982a6786ba.png"><img width="200" alt="image" src="https://user-images.githubusercontent.com/52110065/206867354-89dded84-38fb-4934-8f31-ad49d3f32fe0.png">
 
