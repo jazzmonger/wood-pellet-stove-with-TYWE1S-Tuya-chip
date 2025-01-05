@@ -7,10 +7,6 @@ substitutions:
   device_description: Wood Pellet Stove running ESPHome
   friendly_name: Wood Pellet Stove
 #----------------------------------------------------------
-external_components:
-  - source: github://pr#4032
-    components: tuya
-    refresh: 0s
 esphome:
   name: ${device_name}
   comment: ${device_description}
