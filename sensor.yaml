@@ -1,6 +1,6 @@
 #sensors:
 #replace "location" with whatever you names your pellet stove with stove location so you can identify it
-# the ${location} variable is what is used fro: the ESPHome config file
+# the ${location} variable is what is used fro: the ESPHome config file.
 #House Pellet Stove
   - platform: template
     sensors:
