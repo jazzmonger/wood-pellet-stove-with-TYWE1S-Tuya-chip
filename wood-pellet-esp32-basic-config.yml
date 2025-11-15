@@ -1,0 +1,187 @@
+#----------------------------------------------------------
+# Requires my pellet stove control board and an ESP32 to use this file  
+# No mods to the pellet stove control board are required
+# Adds local sensors for all attributes previously in Tuya cloud
+#
+substitutions:
+  device_name: wood-pellet-esp32-basic
+  device_description: Wood Pellet Stove Basic Config using ESP32
+  friendly_name: Wood Pellet Stove ESP32 Basic Config
+  location: Basic 
+#----------------------------------------------------------
+esphome:
+  name: ${device_name}
+  comment: ${device_description}
+
+esp32:
+  board: wemos_d1_mini32
+  framework: 
+    type: arduino #esp-idf
+
+api:
+
+ota:
+  platform: esphome
+
+wifi:
+  use_address: 192.168.1.215 # use when renaming this node
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  fast_connect: on  
+#
+# Enable Home Assistant API
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wood-Pellet-Stove"
+    password: "Password"
+
+captive_portal:
+  
+time:
+  - platform: homeassistant
+    id: time_homeassistant
+    on_time_sync:
+      - component.update: sensor_uptime_timestamp
+      
+# Enable logging
+logger:
+  level: DEBUG
+
+i2c: # For time of flight sensor
+   sda: GPIO5
+   scl: GPIO33
+   scan: false
+
+uart:
+  rx_pin: RX
+  tx_pin: TX
+  baud_rate: 9600
+
+select:
+  - platform: "tuya"
+    tuya_id: "house"
+    name: "Power Select"
+    enum_datapoint: 4
+    options:
+      0: P1
+      1: P2
+      2: P3
+      3: P4
+  - platform: "tuya"
+    tuya_id: "house"
+    name: "ECO Select"
+    enum_datapoint: 101
+    options:
+      0: ECO1
+      1: ECO2
+
+##DATA POINT VALUES
+#1 - Power on (Heat)
+#4 - Mode P1/P2/P3P4
+#101 - ECO1/ECO2
+#104 - Error Code
+#106 Set Temp
+#107 - Current Temp
+#108 - Pipe Temp
+#109 - Protect Temp
+#-----------------
+#Datapoint 1: switch (value: OFF)
+#Datapoint 105: enum (value: 0)
+#Datapoint 4: enum (value: 0)
+#Datapoint 101: enum (value: 0)
+#Datapoint 106: int value (value: 68)
+#Datapoint 107: int value (value: 64)
+#Datapoint 108: int value (value: 68)
+#Datapoint 109: int value (value: 72)
+#Datapoint 104: bitmask (value: 0)
+#GPIO Configuration: status: pin 5, reset: pin 0
+#Product: '{"p":"8Dj5zVjGqPSXaUgf","v":"1.0.0","m":0}'
+
+# Register the Tuya MCU connection
+tuya:
+  id: "house"
+  
+#These arent needed but greatly help in debugging
+sensor:
+  - platform: "tuya"
+    name: "Stove-Power On"
+    sensor_datapoint: 1
+  - platform: "tuya"
+    name: "Stove-Error Code"
+    sensor_datapoint: 104
+  - platform: "tuya"   
+    name: "Stove-ECO Mode"
+    sensor_datapoint: 101
+  - platform: "tuya"
+    name: "Stove-Power Mode"
+    sensor_datapoint: 4
+  - platform: "tuya"
+    name: "Stove-DP#105"
+    sensor_datapoint: 105
+  - platform: "tuya"
+    name: "Stove-Set Temp"
+    sensor_datapoint: 106
+  - platform: "tuya"
+    name: "Stove-Current Temp"
+    sensor_datapoint: 107
+#
+  - platform: uptime
+    id: sensor_uptime
+
+  - platform: wifi_signal
+    name: ${friendly_name} Signal
+    update_interval: 60s    
+  - platform: template
+    id: sensor_uptime_timestamp
+    name: "${friendly_name} Uptime"
+    device_class: "timestamp"
+    accuracy_decimals: 0
+    update_interval: never
+    lambda: |-
+      static float timestamp = (
+        id(time_homeassistant).utcnow().timestamp - id(sensor_uptime).state
+      );
+      return timestamp;
+
+  - platform: vl53l0x  # <- MUCH more accurate and less noise than Ultrasonic sensors!
+    name: "${location} raw pellet level"
+    address: 0x29
+    long_range: true
+    timeout: 200us
+    update_interval: 60s
+    unit_of_measurement: "m"
+    accuracy_decimals: 2
+    on_value:
+      then:
+# Replace 0.4 by the height of hopper. From the sensor to the bottom.
+# https://www.dcode.fr/lagrange-interpolating-polynomial
+# take  measurements, top, middle and bottom of pellets w/ the TOF sensor.
+# x axix is measuerment distance in meters, y is %
+# or: https://www.wolframalpha.com/input?i=interpolating+polynomial+%7B0.04%2C100%7D%2C%7B0.22%2C50%7D%7B0.5%2C0%7D
+#  interpolating polynomial {0.03,100},{.18,50}{.34,10}{.38,0}
+        - sensor.template.publish:
+            id: ultrasonic_smoothed
+            state: !lambda 'return (-768.049)*x*x*x + (691.244)*x*x - (448.771)*x + (112.862);'
+# 
+  - platform: template
+    id: ultrasonic_smoothed
+    update_interval: 60s    
+    accuracy_decimals: 0     
+    unit_of_measurement: "%"
+    icon: "mdi:sack-percent"    
+    name: "${location} pellet level processed & filtered"
+    #play with this to get the best results
+    # filters:
+    #   - sliding_window_moving_average:
+    #       window_size: 30
+    #       send_every: 15
+
+climate:
+  - platform: tuya
+    #if in the USA, your stove settings will be sent in F. Set to false if your stove settings are in C.
+    reports_fahrenheit: true 
+    name: "${location} Wood Pellet Stove"
+    switch_datapoint: 1
+    target_temperature_datapoint: 106
+    current_temperature_datapoint: 107
