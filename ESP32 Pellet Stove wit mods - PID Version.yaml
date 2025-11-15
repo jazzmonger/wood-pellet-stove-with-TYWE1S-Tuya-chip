@@ -42,10 +42,10 @@
 # GPIO33 - SCL
 #--------------------------------------------------------
 substitutions:
-  device_name: "house-wood-pellet-stove"
-  device_description: House Pellet Stove running ESPHome
-  friendly_name: House Wood Pellet Stove
-  location: House
+  device_name: "location-wood-pellet-stove"
+  device_description: location Pellet Stove running ESPHome
+  friendly_name: location Wood Pellet Stove
+  location: location
   lighting_count: "55" #sets max number of dumps of pellets during lighting
 #----------------------------------------------------------
 #
@@ -1167,7 +1167,6 @@ climate:
 
 ota:
   platform: esphome
-  #password: "e6f3c39fda46af2b85c2e97dfeb62da7"
   
 wifi:
   #use_address: 192.168.1.103 # use when renaming this node
