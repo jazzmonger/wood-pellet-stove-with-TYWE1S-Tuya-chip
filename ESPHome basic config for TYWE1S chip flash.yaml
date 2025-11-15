@@ -1,6 +1,7 @@
 #----------------------------------------------------------
-# No physical mods required to the display to use this file other than to get it to flash this code.
-# Adds local sensors for all attributes previously in Tuya cloud
+# No physical mods required to the display to use this file other than to get it to flash this code onto the
+# TWYE1S thats already in the stove.
+# Adds local sensors for all attributes previously in Tuya cloud and gives complete local control with ha.
 #
 substitutions:
   device_name: wood-pellet-stove
