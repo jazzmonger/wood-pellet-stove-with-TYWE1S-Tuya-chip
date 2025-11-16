@@ -4,22 +4,6 @@
 #House Pellet Stove
   - platform: template
     sensors:
-        house_error_code_decoded:
-         value_template: >
-          {% set Pval2 = states('sensor.location_stove_error_code') | float(0)  %}
-          {% if   Pval2  == 32768 %} E2 Failure to ignite Pot 
-          {% elif Pval2  == 16384 %} E1 Fire went out, likely out of pellets
-          {% elif Pval2  == 4096 %} E7 Power previously lost
-          {% elif Pval2  == 2048 %} E5 Door is open
-          {% elif Pval2  == 256 %} MCU Comms failed. Check tx/rx wires &  Restart Stove            
-          {% elif Pval2  == 32 %} ESO3 OPEN at the room sensor, replace sensor
-          {% elif Pval2  == 16 %} ESC3 SHORT at the room sensor, replace sensor                  
-          {% elif Pval2  == 8 %} ESO1 OPEN at the h.temp sensor, replace sensor
-          {% elif Pval2  == 4 %} ESC1 SHORT at the h.temp sensor, possibly on P1 - chg to P2 or lower
-          {% elif Pval2  == 2 %} ESO2 OPEN at the protection sensor.  replace sensor
-          {% elif Pval2  == 1 %} ESC2 SHORT at the protection sensor.  replace sensor
-          {% elif Pval2  == 0 %} Normal Operation
-          {% endif %}
     #display yes or no
         yourname_bs_error_yesno:
           value_template: >
