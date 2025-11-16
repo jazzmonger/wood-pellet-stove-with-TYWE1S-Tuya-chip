@@ -1,12 +1,14 @@
 #----------------------------------------------------------
-# TO DO: 
-# 1) add "lighting" flag.  Don't clear it until temp hits 275F.
-#  then prevent P5 until flag is cleared and stove has been properly lit.
-#  this will reduce the stove flame-outs
-# 2) add svariable for initial power level so different rooms can be accomodated.
-#
 # TUYA WOOD PELLET STOVE Converted to ESP32
-#version; 3.1
+# version 4.1 11/16/25
+# remove buffer size from UARTs to avoid ESP reboot
+#
+# version 4.0
+# Added PID controller to iding mode that changes auger OFF time dynamically
+# Start w/ these values PB = 15, Td=75 , Ti=50  
+#
+# version; 3.1
+# date 12/28/24
 # Add routines to shut of Auger every time it shouldn't be on.
 # date: 03-21-23 bug fixes
 # version; 3.0.1
@@ -42,15 +44,17 @@
 # GPIO33 - SCL
 #--------------------------------------------------------
 substitutions:
-  device_name: "house-wood-pellet-stove"
-  device_description: House Pellet Stove running ESPHome
-  friendly_name: House Wood Pellet Stove
-  location: House
+  device_name: "test-wood-pellet-stove"
+  device_description: Test Pellet Stove
+  friendly_name: Test Wood Pellet Stove
+  location: Test
   lighting_count: "55" #sets max number of dumps of pellets during lighting
 #----------------------------------------------------------
 #
 esp32:
   board: wemos_d1_mini32
+  framework: 
+    type: arduino #esp-idf
 #
 api:
   reboot_timeout: 0s # 0s is disabled so if we lose home assistant API keep running
@@ -67,7 +71,7 @@ uart:
   - id: mcu_uart_TXpin
     rx_pin: GPIO16 #attach new wire to TX labled pin on DISPLAY board
     baud_rate: 2400
-    rx_buffer_size: 80
+    #rx_buffer_size: 80 - causes ESP to reboot...
     debug:
       direction: RX
       dummy_receiver: true
@@ -130,7 +134,6 @@ uart:
   - id: mcu_uart_RXpin
     rx_pin: GPIO21 #attach new wire to RX labled pin on DISPLAY board
     baud_rate: 2400
-    rx_buffer_size: 80
     debug:
       direction: RX
       dummy_receiver: true
@@ -147,11 +150,37 @@ uart:
                 //but who cares, we only need stable values to stoke the fire
                 id(pipe_converted).publish_state(((bytes[6]) * 1.8) - 4.0);          
                   }                  
-#
+
 globals:
+  - id: pid_error_sum
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+
+  - id: pid_last_error
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+
+  - id: pid_last_time
+    type: float
+    restore_value: no
+    initial_value: '0.0'
   - id: heartbeat_global
     type: int
     restore_value: no
+    initial_value: '0'
+
+  - id: pid_last_temp
+    type: float
+    restore_value: no
+    initial_value: '150.0'
+
+  - id: pid_integral
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+
   - id: heartbeat_max_global
     type: int
     restore_value: no
@@ -173,23 +202,21 @@ globals:
 #
 esphome:  
   name: ${device_name}
-  platformio_options:
-    upload_speed: 115200
-    #REQUIRED FOR UARTs TO WORK
-    board_build.extra_flags:
-      - "-DARDUINO_USB_CDC_ON_BOOT=0"  # Override, defaults to '-DARDUINO_USB_CDC_ON_BOOT=1'
+  # platformio_options:
+  #   #upload_speed: 115200
+  #   #REQUIRED FOR UARTs TO WORK
+  #   board_build.extra_flags:
+  #     - "-DARDUINO_USB_CDC_ON_BOOT=0"  # Override, defaults to '-DARDUINO_USB_CDC_ON_BOOT=1'
   comment: ${device_description}
   on_shutdown: 
     priority: 1000
     then:
     - switch.turn_off: auger_output_to_optoisolator
 
-
   on_boot:
     priority: -100
     then:
-      - switch.turn_off: auger_output_to_optoisolator
-      - delay: 5s
+      - switch.turn_off: auger_output_to_optoisolator     
       - switch.turn_off: auger_output_to_optoisolator      
       - lambda: id(MCUrawString).publish_state("Booting. Delay 10s");            
       - delay: 10s # wait for Pellet stove power on to settle down
@@ -250,13 +277,136 @@ esphome:
                 id: stove_pipe_temp
                 above: 140.0  # exactly the point it switches from "lighting to heating"
           then:
-             - lambda: id(MCUrawString).publish_state("Stabilization");          
-          else:
-              #- lambda: id(MCUrawString).publish_state("ESP32 Booting...");           
+             - lambda: id(MCUrawString).publish_state("Stabilization");           
+      - logger.log: "onboot script.execute: sc_pid_control"
+      - script.execute: sc_pid_control
 script:
-  - id: stoke_fire
+#
+# PID Controller
+#
+  - id: sc_pid_control 
+    mode: single 
+    then:
+    - if:
+        condition:
+            - lambda: return id(hvac_action_tuya).state != "OFF"; #Stove is not OFF
+        then:             
+          - lambda: |-
+              // Configurable cycle parameters
+              const float cycle_time = 15.0;          // Total cycle time in seconds
+              const float min_multiplier = 0.05;      // Minimum fraction of cycle_time
+              const float max_multiplier = 0.9;       // Maximum fraction of cycle_time
+
+              // Persistent variables
+              static float last_temp = 0.0;           // Last temperature reading
+              static unsigned long last_time = 0;     // Last timestamp in milliseconds
+              static float integral = 0.0;            // Integral term for PID
+              static float last_output = 0.0;         // Last PID output
+
+              // Get current time in milliseconds
+              unsigned long current_time = millis();
+
+              // Handle first run or invalid time
+              if (last_time == 0) {
+                  last_time = current_time;
+                  ESP_LOGD("PID", "Initializing: current_time = %lu", current_time);
+                  return;
+              }
+
+              // Calculate time delta in seconds
+              float dt = (current_time - last_time) / 1000.0;
+              if (dt < 2.0) {                         
+                  last_time = current_time;
+                  return;
+              }
+
+              // Get sensor values - Fix type conversions by accessing .state
+              float current_temp = id(pipe_converted).state;
+              float set_point = id(desired_pipe_temp).state;
+              float pb = id(pid_pb).state;
+              float error = set_point - current_temp;
+
+              // Calculate PID gains with proper state access
+              float kp = (pb != 0.0) ? -1.0 / pb : 0.0;
+              float ti = id(pid_ti).state;
+              float ki = (ti != 0.0) ? kp / ti : 0.0;
+              float kd = kp * id(pid_td).state;
+              float tau = id(pid_tau).state;          
+              float theta = id(pid_theta).state;      
+              float center_factor = id(pid_center_factor).state;   // Access global value directly
+              float stable_window = 5.0;              
+
+              // Use center_factor directly since it's already a float global
+              float center = center_factor;           
+
+              // Smith Predictor
+              float roc = (current_temp - last_temp) / dt;
+              float predicted_temp = current_temp + (roc * theta) * (1 - exp(-dt / tau));
+              float predicted_error = predicted_temp - set_point;
+
+              // PID Terms
+              float p = kp * predicted_error + center;
+              integral += predicted_error * dt;
+              float i = ki * integral;
+              i = std::max(std::min(i, center), -center);  // Prevent windup
+              float derivative = (predicted_temp - last_temp) / dt;
+              float d = kd * derivative;
+
+              // Calculate output
+              float output = p + i + d;
+              if (predicted_error < -pb) {
+                  output = 1.0;
+              } else if (predicted_error > stable_window) {
+                  output = 0.0;
+              }
+
+              // Reset integral near setpoint
+              if (abs(error) <= 3 && last_output != output) {
+                  integral = 0.0;
+              }
+
+              // Calculate on and off times (mapped to your auger timing)
+              float new_on_time = output * cycle_time;
+              float new_off_time = (1.0 - output) * cycle_time;
+
+              // Apply min and max constraints
+              float min_time = cycle_time * min_multiplier;
+              float max_time = cycle_time * max_multiplier;
+              new_on_time = std::max(min_time, std::min(max_time, new_on_time));
+              new_off_time = std::max(min_time, std::min(max_time, new_off_time));
+
+              // Add rate limiting (from your original code)
+              float max_change = 2.0;
+              float last_off = id(pid_auger_off_time).state;
+              if(abs(new_off_time - last_off) > max_change) {
+                  new_off_time = last_off + (new_off_time > last_off ? max_change : -max_change);
+              }
+
+              // Publish states (using your original references)
+              id(auger_on_timez).publish_state(new_on_time);
+              id(auger_off_timez).publish_state(new_off_time);
+              id(pid_auger_on_time).publish_state(new_on_time);
+              id(pid_auger_off_time).publish_state(new_off_time);
+              id(pid_error).publish_state(error);
+
+              // Update last values
+              last_temp = current_temp;
+              last_time = current_time;
+              last_output = output;
+
+              // Debug logging
+              ESP_LOGD("PID", "Temp: %.1f, Target: %.1f, Error: %.1f, Output: %.1f", 
+                      current_temp, set_point, error, output);
+              ESP_LOGD("PID", "P: %.2f, I: %.2f, D: %.2f, Center: %.2f", 
+                      p, i, d, center);
+              ESP_LOGD("PID", "New timing - ON: %.1fs, OFF: %.1fs", 
+                      new_on_time, new_off_time);        
+
+          - delay: .01s
+
 #started by on_value, 
 #if burnpot is starting to go out, then rekindle it
+  - id: stoke_fire
     mode: single
     then:                      
     - logger.log: "1script.stoke_fire. ENTERING WHILE LOOP"
@@ -273,7 +423,7 @@ script:
             - delay: 0.01s   #prevents race conditions from occuring
             - logger.log: 
                 format: "SCRIPT.STOKING.Stoking FIRE NOW | stoking_temp= %f"
-                args: ['id(stoking_temp).state']      #         
+                args: ['id(stoking_temp).state']      #
             - switch.turn_on: auger_output_to_optoisolator    
             - lambda: id(heartbeat_global) = 0;         
             - delay: !lambda "return id(stoking_on_time).state * 1000;" # SECONDS ON
@@ -308,13 +458,18 @@ script:
                     id: stove_pipe_temp
                     below: 140          
               then:
-#                - logger.log: "2script.new_auger_motor_power_level.STOPPING SCRIPT, pipe temp < 140"
+                - logger.log: "2script.new_auger_motor_power_level.STOPPING SCRIPT, pipe temp < 140"
                 - script.stop: new_auger_motor_power_level
+          - logger.log: "execute sc_PID_control"
+          - script.execute: sc_pid_control
+          - delay: 0.01s
           - switch.turn_on: auger_output_to_optoisolator    
           - lambda: id(heartbeat_global) = 0;
           - delay: !lambda "return id(auger_on_timez).state * 1000;"
-#          - logger.log: "3script.newP5 active. Auger ON delay completed" 
-          - switch.turn_off: auger_output_to_optoisolator  
+          - logger.log: "3script.newP5 active. Auger ON delay completed" 
+          - switch.turn_off: auger_output_to_optoisolator 
+         # - script.execute: sc_pid_control
+          - delay: 0.01s
           - logger.log: "4script.newP5 active. Auger OFF" 
           - delay: !lambda "return id(auger_off_timez).state * 1000;"
           - logger.log: "5script.newP5 active. Auger OFF delay completed" 
@@ -514,6 +669,10 @@ text_sensor:
     icon: mdi:clock-start
     update_interval: 60s
  #
+  - platform: template
+    name: "${location} Stove-Error Message"
+    id: error_message
+ #
  #This sensor is changing every 10s and the ONLY indicator of what state the stove is in
   - platform: template
     id: hvac_action_tuya
@@ -530,9 +689,9 @@ text_sensor:
         default:
           return (std::string) "UNKNOWN";
       }
-    on_value:
-      then:
-        - lambda: ESP_LOGD("hvac_action_tuya", "id.hvac_action_tuya.UPDATED | ACTION = %s", x.c_str());
+    # on_value:
+    #   then:
+    #     - lambda: ESP_LOGD("hvac_action_tuya", "id.hvac_action_tuya.UPDATED | ACTION = %s", x.c_str());
         
 #this sensor changes from HEATING to IDLE in ECO2 mode or when we reach set temp in ECO1.  
     on_raw_value:
@@ -594,9 +753,129 @@ text_sensor:
               - script.stop: stoke_fire     
 #
 i2c: # For time of flight sensor
-  sda: GPIO5
-  scl: GPIO33
+   sda: GPIO5
+   scl: GPIO33
+   scan: false
+#----------------------------------------------------------
+# #
+number:
+  - platform: template
+    name: "${location} PID Auger Off Time"
+    id: pid_auger_off_time
+    optimistic: true
+    min_value: 0
+    max_value: 25
+    step: 1
+    restore_value: true
+    initial_value: 10.0
+    mode: box
 #
+  - platform: template
+    name: "${location} PID Auger On Time"
+    id: pid_auger_on_time
+    optimistic: true
+    min_value: 0
+    max_value: 25
+    step: 1
+    restore_value: true
+    initial_value: 10.0
+    mode: box
+
+  - platform: template
+    name: "${location} Desired Pipe Temp"
+    id: desired_pipe_temp
+    optimistic: true
+    min_value: 125
+    max_value: 300
+    step: 5
+    restore_value: true
+    initial_value: 150.0
+    mode: box
+    icon: mdi:tune-vertical
+    
+  - platform: template
+    name: "${location} PID Proportional Band"
+    id: pid_pb
+    optimistic: true
+    min_value: 10
+    max_value: 600
+    step: 1
+    restore_value: true
+    initial_value: 60.0
+    mode: box
+    icon: mdi:tune-vertical    
+
+  - platform: template
+    name: "${location} PID Ti (Reset Time)"
+    id: pid_ti
+    optimistic: true
+    min_value: 0
+    max_value: 600
+    step: 1
+    restore_value: true
+    initial_value: 180.0
+    mode: box
+    icon: mdi:timer-sync
+    
+  - platform: template
+    name: "${location} PID Td (Rate Time)"
+    id: pid_td
+    optimistic: true
+    min_value: 25
+    max_value: 500
+    step: 10    
+    restore_value: true
+    initial_value: 45.0
+    mode: box
+    icon: mdi:timer-outline
+
+  - platform: template
+    name:  "${location} PID Error Temp"
+    id: pid_error
+    min_value: 0
+    max_value: 600
+    step: 1
+    initial_value: 100
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "°F"
+    #accuracy_decimals: 0
+  - platform: template
+    name: "PID Tau"
+    id: pid_tau
+    min_value: 0
+    max_value: 600
+    step: 1
+    initial_value: 115
+    optimistic: true
+    restore_value: true
+    unit_of_measurement: "s"
+
+  - platform: template
+    name: "PID Theta"
+    id: pid_theta
+    min_value: 0
+    max_value: 120
+    step: 1
+    initial_value: 65
+    optimistic: true
+    restore_value: true
+    unit_of_measurement: "s"
+    mode: box
+    icon: mdi:tune-vertical
+
+  - platform: template
+    name: "PID Center Factor"
+    id: pid_center_factor
+    min_value: 0.0
+    max_value: .001
+    step: 0.0001
+    initial_value: 0.0007
+    optimistic: true
+    restore_value: true
+    mode: box
+    icon: mdi:tune-vertical
+
 sensor:    
   - platform: wifi_signal
     name: "${location} WiFi Signal db"
@@ -612,16 +891,13 @@ sensor:
     unit_of_measurement: "%"
     entity_category: "diagnostic"        
 #
-  - platform: debug
-    free:
-      name: "${location} Heap Free"
 #THIS SHOULD ONLY CONTROL STOKING OR NOT
   - platform: template
     id: pipe_converted
     name: "${location} UART Pipe Temp"
     on_value:   # When value simply changes
 #**ADD TURN OFF AUGER ON TEMP >=400    
-      then:     
+      then:  
         - if:
             condition:
               and:
@@ -631,7 +907,7 @@ sensor:
                 - lambda: return !(id(stoke_fire).is_running()); #stoke_fire is NOT running
                 - sensor.in_range: # not lighting
                       id: pipe_converted
-                      above: 130.0                  
+                      above: 125.0                  
                 - sensor.in_range: #just to be safe
                       id: pipe_converted
                       below: 200.0                                 
@@ -675,7 +951,7 @@ sensor:
                       return false;
                     }
             then:      
-              - logger.log: "2 uart idling (not stoking)"
+              #- logger.log: "2 uart idling (not stoking)"
               - globals.set:
                   id: stoking_flag_global
                   value: 'false'               
@@ -744,10 +1020,12 @@ sensor:
     id: auger_counter   
 #get these object values from home assistant 
   - platform: homeassistant
+    name: "${location} Auger Off Time"
     id: auger_off_timez
     entity_id: input_number.${location}_auger_off_time #helper in home assistant
 #
   - platform: homeassistant
+    name: "${location} Auger On Time"
     id: auger_on_timez
     entity_id: input_number.${location}_auger_on_time #helper in home assistant
 #    
@@ -765,7 +1043,7 @@ sensor:
     id: stoking_off_time
     entity_id: input_number.${location}_stoking_off_time #helper in home assistant
     force_update: true
-#    
+ #    
   - platform: vl53l0x  # <- MUCH more accurate and less noise than Ultrasonic sensors!
     name: "${location} raw pellet level"
     address: 0x29
@@ -798,27 +1076,62 @@ sensor:
     #   - sliding_window_moving_average:
     #       window_size: 30
     #       send_every: 15
-  #
+#   #
   - platform: "tuya"
     name: "${location} Stove-Power On"
     sensor_datapoint: 1
     id: stove_on
-
+      
   - platform: "tuya"
     name: "${location} Stove-Error Code"
     id: error_code
     sensor_datapoint: 104
+    on_value:
+    
+      - lambda: |-
+          float error_val = id(error_code).state;
+          const char* error_msg = "";  
+          if (error_val == 32768) {
+            error_msg = "E2 Failure to ignite Pot";
+          } else if (error_val == 16384) {
+            error_msg = "E1 Fire went out, likely out of pellets";
+          } else if (error_val == 4096) {
+            error_msg = "E7 Power previously lost";
+          } else if (error_val == 2048) {
+            error_msg = "E5 Door is open";
+          } else if (error_val == 256) {
+            error_msg = "MCU Comms failed. Check tx/rx wires & Restart Stove";
+          } else if (error_val == 32) {
+            error_msg = "ESO3 OPEN at the room sensor, replace sensor";
+          } else if (error_val == 16) {
+            error_msg = "ESC3 SHORT at the room sensor, replace sensor";
+          } else if (error_val == 8) {
+            error_msg = "ESO1 OPEN at the h.temp sensor, replace sensor";
+          } else if (error_val == 4) {
+            error_msg = "ESC1 SHORT at the h.temp sensor, possibly on P1 - chg to P2 or lower";
+          } else if (error_val == 2) {
+            error_msg = "ESO2 OPEN at the protection sensor. replace sensor";
+          } else if (error_val == 1) {
+            error_msg = "ESC2 SHORT at the protection sensor. replace sensor";
+          } else if (error_val == 0) {
+            error_msg = "Normal Operation";
+          } else {
+            error_msg = "Unknown Error Code";
+          }
+          id(error_message).publish_state(error_msg);
+          ESP_LOGI("ERROR_LOG", "***ERROR CODE CHANGED*** = %s", error_msg);
 #
   - platform: "tuya"
     name: "${location} Stove-Power Mode"
     sensor_datapoint: 4
 #
   - platform: "tuya"
+    id: tuya_set_temp
     name: "${location} Stove-Set Temp"
     sensor_datapoint: 106
 #
   - platform: "tuya"
-    id: current_temp
+    id: tuya_current_temp
     name: "${location} Stove-Current Temp"
     sensor_datapoint: 107
     filters:
@@ -863,7 +1176,7 @@ select:
     enum_datapoint: 101
     options:
       0: ECO1 - Heat then OFF
-      1: ECO2 - Px then uP4
+      1: ECO2 - Px then P4
 #
 # Data points observed in Tuya iOT platform during debug mode
 # 1 - Power on (Heat)
@@ -935,8 +1248,6 @@ climate:
       temperature_step: 1
     on_state:
     #Failsafe if auger ever gets stuck, cover ALL cases
-#[08:25:52][D][climate:396]: 'House Wood Pellet Stove' - Sending state:
-#[08:25:52][D][climate:399]:   Mode: OFF
       then:
        - if:
           condition:
@@ -958,8 +1269,10 @@ climate:
 
 ota:
   platform: esphome
+  
 wifi:
-  ssid: !secret wifi_ssid
+  use_address: 192.168.1.215 # use when renaming this node
+  ssid: "VS2.4"
   password: !secret wifi_password
   power_save_mode: none
   fast_connect: on
@@ -971,5 +1284,8 @@ wifi:
 logger:
   level: debug
   baud_rate: 0 #required for UART sniffer to work
+  logs:
+      uart_debug: ERROR
+      sensor: ERROR
 debug:
   update_interval: 60s      
