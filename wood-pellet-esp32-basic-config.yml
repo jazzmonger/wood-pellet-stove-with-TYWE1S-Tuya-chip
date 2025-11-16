@@ -1,4 +1,4 @@
-#----------------------------------------------------------
+#---------------------------------------------------------- 
 # Requires my pellet stove control board and an ESP32 to use this file  
 # No mods to the pellet stove control board are required
 # Adds local sensors for all attributes previously in Tuya cloud
