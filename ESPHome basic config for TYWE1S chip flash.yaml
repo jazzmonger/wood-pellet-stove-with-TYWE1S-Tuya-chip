@@ -7,6 +7,7 @@ substitutions:
   device_name: wood-pellet-stove
   device_description: Wood Pellet Stove running ESPHome
   friendly_name: Wood Pellet Stove
+  location: House
 #----------------------------------------------------------
 esphome:
   name: ${device_name}
@@ -23,7 +24,7 @@ wifi:
 # Enable Home Assistant API
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "House-Wood-Pellet-Stove"
+    ssid: "${location}-Wood-Pellet-Stove"
     password: "REDACTED"
 
 captive_portal:
@@ -47,7 +48,7 @@ uart:
 select:
   - platform: "tuya"
     tuya_id: "house"
-    name: "ESPH House Power Select"
+    name: "${location} Power Select"
     enum_datapoint: 4
     options:
       0: P1
@@ -56,7 +57,7 @@ select:
       3: P4
   - platform: "tuya"
     tuya_id: "house"
-    name: "ESPH House ECO Select"
+    name: "${location} ECO Select"
     enum_datapoint: 101
     options:
       0: ECO1
@@ -88,14 +89,53 @@ select:
 tuya:
   id: "house"
   
-#These arent needed but greatly help in debugging
 sensor:
+  - platform: template
+    name: "${location} Stove-Error Message"
+    id: error_message
+    
   - platform: "tuya"
-    name: "Stove-Power On"
+    name: "${location} Stove-Power On"
     sensor_datapoint: 1
+    
   - platform: "tuya"
-    name: "Stove-Error Code"
+    name: "${location} Stove-Error Code"
+    id: error_code
     sensor_datapoint: 104
+    on_value: 
+      - lambda: |-
+          float error_val = id(error_code).state;
+          const char* error_msg = "";  
+          if (error_val == 32768) {
+            error_msg = "E2 Failure to ignite Pot";
+          } else if (error_val == 16384) {
+            error_msg = "E1 Fire went out, likely out of pellets";
+          } else if (error_val == 4096) {
+            error_msg = "E7 Power previously lost";
+          } else if (error_val == 2048) {
+            error_msg = "E5 Door is open";
+          } else if (error_val == 256) {
+            error_msg = "MCU Comms failed. Check tx/rx wires & Restart Stove";
+          } else if (error_val == 32) {
+            error_msg = "ESO3 OPEN at the room sensor, replace sensor";
+          } else if (error_val == 16) {
+            error_msg = "ESC3 SHORT at the room sensor, replace sensor";
+          } else if (error_val == 8) {
+            error_msg = "ESO1 OPEN at the h.temp sensor, replace sensor";
+          } else if (error_val == 4) {
+            error_msg = "ESC1 SHORT at the h.temp sensor, possibly on P1 - chg to P2 or lower";
+          } else if (error_val == 2) {
+            error_msg = "ESO2 OPEN at the protection sensor. replace sensor";
+          } else if (error_val == 1) {
+            error_msg = "ESC2 SHORT at the protection sensor. replace sensor";
+          } else if (error_val == 0) {
+            error_msg = "Normal Operation";
+          } else {
+            error_msg = "Unknown Error Code";
+          }
+          id(error_message).publish_state(error_msg);
+          ESP_LOGI("ERROR_LOG", "***ERROR CODE CHANGED*** = %s", error_msg);
+    
   - platform: "tuya"   
     name: "Stove-ECO Mode"
     sensor_datapoint: 101
