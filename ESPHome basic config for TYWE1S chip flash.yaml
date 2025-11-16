@@ -1,7 +1,11 @@
+
 #----------------------------------------------------------
 # No physical mods required to the display to use this file other than to get it to flash this code onto the
 # TWYE1S thats already in the stove.
 # Adds local sensors for all attributes previously in Tuya cloud and gives complete local control with ha.
+#
+#version 2.0
+#added a text error sensor
 #
 substitutions:
   device_name: wood-pellet-stove
@@ -14,11 +18,16 @@ esphome:
   comment: ${device_description}
   platform: ESP8266
   board: esp01_1m
+
 api:
+
 ota:
+  platform: esphome
+
 wifi:
-  ssid: "REDACTED"
-  password: "REDACTED"
+  #use_address: 192.168.1.215 # use when renaming this node
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   power_save_mode: none
 #
 # Enable Home Assistant API
@@ -41,8 +50,8 @@ logger:
 #  baud_rate: 0
 
 uart:
-  rx_pin: GPIO13
-  tx_pin: GPIO15
+  rx_pin: RX #GPIO13
+  tx_pin: TX #GPIO15
   baud_rate: 9600
 
 select:
@@ -88,12 +97,13 @@ select:
 # Register the Tuya MCU connection
 tuya:
   id: "house"
-  
-sensor:
+
+text_sensor:  
   - platform: template
-    name: "${location} Stove-Error Message"
+    name: "Stove-Error Message"
     id: error_message
     
+sensor:
   - platform: "tuya"
     name: "${location} Stove-Power On"
     sensor_datapoint: 1
@@ -139,22 +149,26 @@ sensor:
   - platform: "tuya"   
     name: "Stove-ECO Mode"
     sensor_datapoint: 101
+
   - platform: "tuya"
     name: "Stove-Power Mode"
     sensor_datapoint: 4
+  
   - platform: "tuya"
     name: "Stove-DP#105"
     sensor_datapoint: 105
+  
   - platform: "tuya"
     name: "Stove-Set Temp"
     sensor_datapoint: 106
+  
   - platform: "tuya"
     name: "Stove-Current Temp"
     sensor_datapoint: 107
-#
+
   - platform: uptime
     id: sensor_uptime
-#sensor:
+
   - platform: wifi_signal
     name: ${friendly_name} Signal
     update_interval: 60s    
