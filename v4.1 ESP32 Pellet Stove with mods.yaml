@@ -11,7 +11,7 @@
 # TUYA WOOD PELLET STOVE Converted to ESP32
 # version 4.2 Nov 30 2025
 # Added PID controller to iding mode that changes auger OFF time dynamically
-# Start w/ these values PB = 15, Td=75 , Ti=50  
+# Start w/ these values PB = 80, Td=35 , Ti=180
 #
 # version; 3.1
 # date 12/28/24
