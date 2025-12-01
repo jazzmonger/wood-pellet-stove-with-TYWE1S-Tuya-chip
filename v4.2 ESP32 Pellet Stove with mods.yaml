@@ -1,4 +1,4 @@
-#----------------------------------------------------------
+#---------------------------------------------------------
 # TO DO: 
 # 1) add "lighting" flag.  Don't clear it until temp hits 275F.
 #  then prevent P5 until flag is cleared and stove has been properly lit.
