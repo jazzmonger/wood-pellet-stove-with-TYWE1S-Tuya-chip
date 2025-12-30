@@ -166,6 +166,14 @@ sensor:
     name: "Stove-Current Temp"
     sensor_datapoint: 107
 
+  - platform: "tuya"
+    name: "Stove-Exhaust Temp"
+    sensor_datapoint: 108
+
+  - platform: "tuya"
+    name: "Stove-Protect Temp"
+    sensor_datapoint: 109
+
   - platform: uptime
     id: sensor_uptime
 
