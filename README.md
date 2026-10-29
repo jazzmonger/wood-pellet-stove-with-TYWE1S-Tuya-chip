@@ -1,5 +1,7 @@
 Wood Pellet Stove with Tuya TYWE1S chip flashed with ESPHome gives you COMPLETE local control over ALL stove functions (and adds some).
 
+> **No soldering, no flashing, no stove downtime:** if you just want local Home Assistant control (power, set temp, P1–P4, ECO1/ECO2, temperatures, decoded faults) without the vendor app, see **[docs/LOCAL-CONTROL.md](docs/LOCAL-CONTROL.md)**. It keeps the stock TYWE1S firmware and uses the [tuya-local](https://github.com/make-all/tuya-local) integration with the ready-made stove profile in [`tuya-local/`](tuya-local/pellet_stove_tywe1s.yaml). The ESPHome flashing and ESP32 mods below remain the way to unlock ultra-low burn, PID auger control, real-time temps and remote error reset.
+
 The Discussions section also has LOTs of info: https://github.com/jazzmonger/wood-stove-with-TYWE1S-Tuya-chip/discussions
 Including the discussion of a new circuit board design.
 

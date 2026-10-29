@@ -1,0 +1,137 @@
+# tuya-local device profile: pellet stove with the Tuya TYWE1S (TuyaMCU)
+# WiFi module - Cleveland Iron Works / Master Forge / Nemaxx family, as
+# documented in jazzmonger/wood-pellet-stove-with-TYWE1S-Tuya-chip.
+#
+# Install: copy to <HA config>/custom_components/tuya_local/devices/,
+# restart Home Assistant, then add the stove under
+# Settings > Devices & services > Tuya Local. tuya-local updates replace
+# that folder, so copy this file back after each tuya-local update.
+#
+# Mapping basis:
+#  - DP ids and types: ESPHome TuyaMCU dump from this stove family
+#    (repo README; upstream discussion #31).
+#  - LAN enum strings (p1..p4, ECO1/ECO2): LOCAL DPS of a sibling stove on
+#    the same controller family (make-all/tuya-local issue #3596). If your
+#    "LOCAL DPS" log line shows different strings, edit the dps_val values.
+#  - The stove reports every temperature DP in degrees F (README).
+name: Pellet stove
+products:
+  - id: 8Dj5zVjGqPSXaUgf
+    manufacturer: Cleveland Iron Works / Master Forge / Nemaxx
+    model: Pellet stove (TYWE1S TuyaMCU controller)
+entities:
+  - entity: climate
+    translation_only_key: heater
+    dps:
+      - id: 1
+        type: boolean
+        name: hvac_mode
+        mapping:
+          - dps_val: false
+            value: "off"
+          - dps_val: true
+            value: heat
+      - id: 4
+        type: string
+        name: preset_mode
+        mapping:
+          - dps_val: p1
+            value: P1
+          - dps_val: p2
+            value: P2
+          - dps_val: p3
+            value: P3
+          - dps_val: p4
+            value: P4
+      - id: 105
+        type: string
+        name: temperature_unit
+        optional: true
+        mapping:
+          - dps_val: F
+            value: F
+          - dps_val: C
+            value: C
+      - id: 106
+        type: integer
+        name: temperature
+        unit: F
+        range:
+          min: 50
+          max: 90
+      - id: 107
+        type: integer
+        name: current_temperature
+        unit: F
+  - entity: select
+    name: ECO mode
+    icon: "mdi:leaf"
+    dps:
+      - id: 101
+        type: string
+        name: option
+        mapping:
+          - dps_val: ECO1
+            value: ECO1
+          - dps_val: ECO2
+            value: ECO2
+  - entity: sensor
+    name: Exhaust temperature
+    class: temperature
+    dps:
+      - id: 108
+        type: integer
+        name: sensor
+        unit: F
+        class: measurement
+  - entity: sensor
+    name: Protection temperature
+    class: temperature
+    category: diagnostic
+    dps:
+      - id: 109
+        type: integer
+        name: sensor
+        unit: F
+        class: measurement
+  - entity: binary_sensor
+    class: problem
+    dps:
+      - id: 104
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 0
+            value: false
+          - value: true
+      - id: 104
+        type: bitfield
+        name: fault_code
+      - id: 104
+        type: bitfield
+        name: description
+        mapping:
+          - dps_val: 0
+            value: ok
+          - dps_val: 1
+            value: esc2_protection_sensor_short
+          - dps_val: 2
+            value: eso2_protection_sensor_open
+          - dps_val: 4
+            value: esc1_exhaust_sensor_short_or_overheat
+          - dps_val: 8
+            value: eso1_exhaust_sensor_open
+          - dps_val: 16
+            value: esc3_room_sensor_short
+          - dps_val: 32
+            value: eso3_room_sensor_open
+          - dps_val: 256
+            value: mcu_comms_failed
+          - dps_val: 2048
+            value: e5_door_open
+          - dps_val: 4096
+            value: e7_power_lost
+          - dps_val: 16384
+            value: e1_fire_out
+          - dps_val: 32768
+            value: e2_ignition_failed
