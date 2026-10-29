@@ -1,0 +1,13 @@
+# Never commit device credentials or LAN details (this repo is public).
+# tinytuya scan/wizard output: device ids, local keys, IPs.
+tinytuya.json
+devices.json
+snapshot.json
+tuya-raw.json
+# ESPHome
+secrets.yaml
+.esphome/
+# Firmware backups / builds
+*.bin
+# Python
+__pycache__/
