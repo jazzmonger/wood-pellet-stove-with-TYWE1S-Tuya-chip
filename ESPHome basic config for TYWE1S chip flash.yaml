@@ -16,11 +16,11 @@ substitutions:
 esphome:
   name: ${device_name}
   comment: ${device_description}
-platform: ESP8266
-board: esp01_1m
 
-# esp8266:
-#   board: esp01_1m
+# TYWE1S = ESP8266EX with 1MB flash. The old top-level "platform:/board:" syntax
+# no longer validates on current ESPHome ("Platform missing").
+esp8266:
+  board: esp01_1m
 
 api:
 
@@ -50,11 +50,16 @@ time:
 # Enable logging
 logger:
   level: DEBUG
-#  baud_rate: 0
+  baud_rate: 0 # REQUIRED: the TuyaMCU link below uses hardware UART0 (swapped to GPIO13/15).
+               # Serial logging would share that UART and spray log text at the stove MCU.
+               # Logs are still available over WiFi (ESPHome dashboard / API).
 
+# The TYWE1S talks to the display MCU on GPIO13 (RX) / GPIO15 (TX), not on the
+# RX/TX (GPIO3/GPIO1) flashing pins. Confirmed by the original working 2022 config
+# and upstream discussion #31 ("The tywe1s used gpio 13/15").
 uart:
-  rx_pin: RX #GPIO13
-  tx_pin: TX #GPIO15
+  rx_pin: GPIO13
+  tx_pin: GPIO15
   baud_rate: 9600
 
 select:
