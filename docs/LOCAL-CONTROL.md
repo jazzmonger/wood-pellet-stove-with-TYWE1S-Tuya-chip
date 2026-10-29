@@ -65,7 +65,12 @@ You get these entities:
 | `select` ECO mode (ECO1 / ECO2) | 101 | ECO1 heats to the setpoint and then shuts down; ECO2 drops to P4 at the setpoint |
 | `sensor` Exhaust temperature | 108 | updates about every 60 s |
 | `sensor` Protection temperature (diagnostic) | 109 | |
-| `binary_sensor` Problem, with `fault_code` and `description` attributes | 104 | e.g. `e2_ignition_failed`, `e1_fire_out`, `e5_door_open` |
+| `binary_sensor` Problem, with `fault_code` and `description` attributes | 104 | e.g. `e2_ignition_failed`, `e1_fire_out`, `e5_door_open`. `fault_code` is the raw bitmap. `description` decodes one fault at a time; `tools/stove_check.py` decodes combinations. |
+
+Two values in the profile are assumptions you may need to change:
+
+- **Units.** The climate entity follows the stove's unit setting (DP 105), but the exhaust and protection sensors are fixed to °F. Keep the stove's front panel on **F** (password `1109` menu, upstream discussion #12). If you switch it to C, change the `unit: F` lines in the profile to `unit: C`.
+- **Set-temperature range.** The 50–90 °F limit is only a UI clamp, a guess. The stove's real limits are in the Tuya data model ("Query Things Data Model" on platform.tuya.com). Widen the `range` if the stove accepts more.
 
 **If the profile doesn't match** (tuya-local logs a `LOCAL DPS` warning), compare the logged values with the `dps_val` strings in the profile. The enum strings `p1`–`p4` / `ECO1`/`ECO2` come from a sibling stove on the same controller (tuya-local [#3596](https://github.com/make-all/tuya-local/issues/3596)). Yours may differ in case or wording. You can also check the stove outside HA with [`tools/stove_check.py`](../tools/stove_check.py):
 
@@ -99,6 +104,8 @@ Because the stove runs without its WiFi module, flashing never needs a heating o
 
   Later updates go over the air: the build uses 410 KB of the 1 MB flash.
 - **Or build a spare and swap it in.** Wire a D1 mini (ESP8266) or ESP32 D1 mini to a plug that matches the daughterboard header, flash it ahead of time, and swap it in within minutes. Community-reported header pinout, looking at the back of the display board with the buzzer top-left, using the header nearest you: **pin 1 = +5 V, pin 5 = RX, pin 6 = TX**. GPIO13 goes to RX and GPIO15 goes to TX (#33, jwaz73). GND was taken from the module's pairing-button leg (#32). **Check these with a multimeter before you power anything.** The MCU side is 5 V logic; a level shifter on the MCU→ESP line is cheap insurance (#30, #34, #41).
+
+If ESPHome logs `Initialization failed at init_state 0` over and over, the module isn't hearing the MCU. On a D1-mini swap, **swap the RX/TX wires first**: the header labels are from the module's point of view. Don't touch the config. If swapping doesn't help, the stove may not be TuyaMCU at all; the Justfire/Blynk stoves in #31 fail exactly this way.
 
 The fixed basic config builds on ESPHome 2026.10.1. Earlier revisions failed to build, used the wrong UART pins (GPIO1/3 instead of GPIO13/15), and logged over the UART shared with the MCU. Those are fixed in this fork's PR #1.
 

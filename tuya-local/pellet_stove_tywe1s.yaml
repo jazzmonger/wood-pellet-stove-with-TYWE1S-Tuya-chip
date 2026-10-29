@@ -13,7 +13,10 @@
 #  - LAN enum strings (p1..p4, ECO1/ECO2): LOCAL DPS of a sibling stove on
 #    the same controller family (make-all/tuya-local issue #3596). If your
 #    "LOCAL DPS" log line shows different strings, edit the dps_val values.
-#  - The stove reports every temperature DP in degrees F (README).
+#  - The stove reports every temperature DP in degrees F (README). If the
+#    stove panel is switched to C, change the sensor `unit: F` lines.
+#  - The 50-90 F set-temperature range is a UI clamp guess; the stove's
+#    real limits are in its Tuya data model.
 name: Pellet stove
 products:
   - id: 8Dj5zVjGqPSXaUgf
