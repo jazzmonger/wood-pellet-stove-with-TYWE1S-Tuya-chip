@@ -45,10 +45,12 @@ Steps marked **[you]** need the stove, your phone or your accounts.
 
 1. **[you]** In **Smart Stove**, open the stove's settings and choose **Remove device** (pick "disconnect and wipe data" if offered). On Tuya devices this resets the WiFi module into pairing mode. The stove keeps heating, since only the WiFi module resets.
 2. **[you]** If the module's LED isn't blinking quickly, put it in pairing mode by hand. The owner's manual says: **press and hold the connection button on the back of the display panel for 3 seconds** until the indicator blinks. Hold again to switch to the slow-blink "AP" pairing mode if fast-blink pairing fails.
-3. **[you]** In **Tuya Smart** (or Smart Life), tap **+ → Add device**. Use auto-scan, or pick **Small Home Appliances → Heater**, and enter your 2.4 GHz WiFi details. Android asks for location during pairing. Grant it **"Only this time"**.
-4. **[you]** Check that the stove shows up and responds in Tuya Smart.
+3. **[you]** Connect your phone to the **2.4 GHz** WiFi network. The TYWE1S has no 5 GHz radio. If your router broadcasts separate 2.4 and 5 GHz network names, pick the 2.4 GHz one, or the app hands the stove a network it can't join.
+4. **[you]** In **Tuya Smart** (or Smart Life), tap **+ → Add device**. **The auto-scan will not find the stove.** It only finds Bluetooth devices and pairing hotspots, and the TYWE1S is WiFi-only. Open the **Add Manually** tab and pick **Small Home Appliances → Heater (Wi-Fi)**. The category only changes the instructions shown. Enter the 2.4 GHz network name and password, confirm the LED is blinking fast, and wait up to two minutes. Android asks for location during pairing. Grant it **"Only this time"**.
+5. **[you]** If fast-blink pairing fails, hold the panel button 3 s again until the LED blinks slowly (about once every 2 s). On the app's "confirm indicator" screen, use the mode switch at the top right to choose **AP mode** (also called compatible mode). Then join the stove's `SmartLife-XXXX` hotspot when the app asks.
+6. **[you]** Check that the stove shows up and responds in Tuya Smart.
 
-If Tuya Smart refuses the device (some OEM products are locked to their brand app), re-add it in Smart Stove and use **Path B** instead.
+Tuya Smart accepted this stove's OEM product (`8Dj5zVjGqPSXaUgf`) on the first stove tried. If it refuses yours (some OEM products are locked to their brand app), re-add the stove in Smart Stove and use **Path B** instead.
 
 ### 3.2 Install tuya-local and the stove profile in Home Assistant
 
